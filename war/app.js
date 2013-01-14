@@ -6,7 +6,7 @@ angular.module('project', [])
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
-	.factory('client', function() {
+	.factory('client', function($window) {
 		return {
 			login: function() {
 				$window.location.replace("login.jsp");

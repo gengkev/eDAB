@@ -15,33 +15,45 @@ import org.json.simple.parser.ParseException;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class GoogleOAuthClient {
-	public static String getEndpointURL() {
+	private static final String SERVER_HOST = "https://edab-ds.appspot.com";
+	private static final String DEBUG_HOST = "http://localhost:8888";
+	private static final String LOGIN_PATH = "/logincallback";
+	
+	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
+	private static final String CLIENT_SECRET = "dj908LVbvrMsHJb0KFZxL1tB";
+	
+	/*
+	public static String getRedirectURL() {
     	boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
     	if (isProduction) {
-    		return "https://edab-ds.appspot.com";
+    		return getRedirectURL(SERVER_HOST);
     	} else {
-    		return "http://localhost:8080";
+    		return getRedirectURL(DEBUG_HOST);
     	}
+	}
+	*/
+	public static String getRedirectURL(String host) {
+		return host + LOGIN_PATH;
 	}
 	public static String getEndpointURL(String host) {
 
     	String url = "https://accounts.google.com/o/oauth2/auth";
     	url += "?response_type=code";
-    	url += "&client_id=808214402787.apps.googleusercontent.com";
-    	url += "&redirect_uri=" + host + "/logincallback";    	
+    	url += "&client_id=" + CLIENT_ID;
+    	url += "&redirect_uri=" + getRedirectURL(host);
     	url += "&scope=https://www.googleapis.com/auth/userinfo.email";
     	url += "&hd=fcpsschools.net";
     	
     	return url;
 	}
 	
-	protected static String getAccessToken(String authCode) throws IOException, ParseException {
+	protected static String getAccessToken(String authCode, String host) throws IOException, ParseException {
     	// Open the connection to the access token thing
-    	String params = "code=" + URLEncoder.encode(authCode, "UTF-8") + "&" +
-    			"client_id=808214402787.apps.googleusercontent.com&" +
-    			"client_secret=kB4ODOtZEftkoZKiqGOM47xy&" +
-    			"redirect_uri=http://localhost:8888/createusercallback&" +
-    			"grant_type=authorization_code";
+    	String params = "code=" + URLEncoder.encode(authCode, "UTF-8") +
+    			"&client_id=" + CLIENT_ID +
+    			"&client_secret=" + CLIENT_SECRET +
+    			"&redirect_uri=" + getRedirectURL(host) +
+    			"&grant_type=authorization_code";
     	
     	
         URL url = new URL("https://accounts.google.com/o/oauth2/token");
@@ -87,7 +99,7 @@ public class GoogleOAuthClient {
         
         // check if 200
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        	throw new IOException("Response code not 200- " + connection.getResponseCode() + "\n" + output);
+        	throw new IOException("Response code not 200- " + connection.getResponseCode() + "\n" + output + "\n" + host);
         }
         
         // Parse the JSON.

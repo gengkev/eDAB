@@ -36,7 +36,10 @@ public class LoginCallbackServlet extends HttpServlet {
     	
     	String access_token = null;
     	try {
-    		access_token = GoogleOAuthClient.getAccessToken(code);
+    		access_token = GoogleOAuthClient.getAccessToken(code,
+					req.getScheme() + "://" +
+					req.getServerName() + ":" + 
+					req.getServerPort());
     	} catch (Exception e) {
     		resp.sendError(500, "Getting access token failed:\n\n" + e);
     	}
