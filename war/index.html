@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="project">
+<head>
+	<meta charset="UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1"/>
+	<title>eDAB | Desklamp Studios</title>
+	<link rel="stylesheet" href="ext/normalize.css"/>
+	<link rel="stylesheet" href="ext/font-awesome.min.css"/>
+	<link rel="stylesheet" href="main.css"/>
+</head>
+<body ng-controller="AppCtrl">
+	<div id="nav_container"> <!-- fixed at top 100% -->
+		<nav>
+			<a class="brand">eDAB</a>
+			<ul class="navbar" ng-controller="NavCtrl">
+				<li ng-repeat="page in pages">
+					<a href="#{{page.path}}" ng-class="{active: onPage(page.path)}" ng-bind="page.name"></a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	
+	<div class="container" ng-view></div>
+	
+	<div id="login-container" ng-hide="logged_in">
+		<div id="login">
+			<h1>eDAB brings your assignment book online.</h1>
+			<p>
+				eDAB is designed to do random stuff that I'm too lazy to write about right now.
+			</p>
+			<p>
+				<button class="btn-signin" ng-click="login()">
+					Sign in with fcpsschools.net
+				</button>
+			</p>
+		</div>
+	</div>
+	<script src="ext/angular.min.js"></script>
+	<script src="app.js"></script>
+</body>
+</html>

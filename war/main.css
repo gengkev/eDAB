@@ -1,0 +1,107 @@
+* {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.center {
+	text-align: center;
+}
+
+
+#nav_container {
+	position: fixed;
+	width: 100%;
+	top: 0;
+}
+nav {
+	border: 1px solid #ccc;
+	border-top-style: none;
+	padding: 10px 20px;
+	margin: auto;
+	max-width: 940px; /* 940px + 20px padding = 960px */
+	background-color: #fff;
+	height: 30px; /* + 20px padding = 50px */
+	overflow: hidden; /* hmm we'll have to deal with mobile */
+}
+nav ul {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
+nav ul li {
+	display: inline-block;
+	list-style-type: none;
+}
+nav ul li a {
+	display: inline-block;
+	text-decoration: none;
+	border-radius: 8px;
+	color: hsl(0, 0%, 55%);
+	margin: 0 4px;
+	padding: 6px 8px;
+	font-size: 16px;
+}
+nav ul li a.active, nav ul li a:hover, nav ul li a:focus, nav ul li a:active {
+	background-color: hsl(0, 0%, 87%);
+	/*color: hsl(0, 0%, 35%);*/
+}
+nav a.brand {
+	display: inline-block;
+	text-decoration: none;
+	font-size: 20px;
+	margin: 0;
+	padding: 0 8px 0 0;
+	color: hsl(0, 0%, 55%);
+}
+nav a.brand:hover {
+	color: hsl(0, 0%, 35%);
+}
+.container {
+	max-width: 940px; /* 940px + 20px padding = 960px */
+	border: 1px solid #CCC;
+	border-top-style: none;
+	margin: auto;
+	margin-top: 51px; /* nav height + padding */
+	padding: 20px;
+}
+
+.btn-signin {
+    border: 2px solid hsl(0, 84%, 56%);
+	border-radius: 4px;
+    color: #fff;
+    background-color: hsl(3, 99%, 65%);
+	
+	background-image: url(fcps.png);
+	background-repeat: no-repeat;
+	
+	background-position: 6px center;
+	background-size: 37.5px 32px;
+	font-size: 22px;
+	padding: 8px 8px 8px 48.5px;
+}
+
+.btn-signin:hover, .btn-signin:focus, .btn-signin:active {
+    background-color: hsl(0, 80%, 56%);
+}
+
+#login-container {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	text-align: center;
+	background-color: rgb(222, 222, 222);
+	background-color: rgba(200, 200, 200, 0.6);
+}
+#login {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 0 10px 3px rgb(150, 150, 150);
+	display: inline-block;
+	max-width: 640px;
+	max-height: 480px;
+	padding: 20px;
+	margin: 30px 10px;
+	text-align: center;
+}
