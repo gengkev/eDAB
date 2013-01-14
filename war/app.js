@@ -9,6 +9,7 @@ angular.module('project', [])
 	.factory('client', function() {
 		return {
 			login: function() {
+				$window.location.replace("login.jsp");
 			}
 		};
 	})
@@ -27,10 +28,6 @@ function AppCtrl($scope, $location, client) {
 
 function NavCtrl($scope, $location, client) {
 	$scope.$watch(function() { return $location.path(); }, function(path) {
-	/*
-		if (path != '/landing' && !server.logged_in) {
-			$location.path('/landing');
-		}*/
 		$scope.currentPage = path;
 	});
 	$scope.pages = [
