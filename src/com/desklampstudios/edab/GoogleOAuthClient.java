@@ -7,25 +7,28 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.google.appengine.api.utils.SystemProperty;
+import org.json.simple.JSONValue;
 
 public class GoogleOAuthClient {
-	private static final String SERVER_HOST = "https://edab-ds.appspot.com";
-	private static final String DEBUG_HOST = "http://localhost:8888";
+	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
+	
+	//private static final String SERVER_HOST = "https://edab-ds.appspot.com";
+	//private static final String DEBUG_HOST = "http://localhost:8888";
 	private static final String LOGIN_PATH = "/logincallback";
 	
 	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
 	private static final String CLIENT_SECRET = "dj908LVbvrMsHJb0KFZxL1tB";
+	private static final String SCOPES = "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email";
 	
 	/*
 	public static String getRedirectURL() {
-    	boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
-    	if (isProduction) {
+    	if (LoginCallbackServlet.isProduction) {
     		return getRedirectURL(SERVER_HOST);
     	} else {
     		return getRedirectURL(DEBUG_HOST);
@@ -35,19 +38,24 @@ public class GoogleOAuthClient {
 	public static String getRedirectURL(String host) {
 		return host + LOGIN_PATH;
 	}
+	public static String getRequestHost(HttpServletRequest req) {
+		return req.getScheme() + "://" +
+				req.getServerName() + ":" + 
+				req.getServerPort();
+	}
+	
 	public static String getEndpointURL(String host) {
-
     	String url = "https://accounts.google.com/o/oauth2/auth";
     	url += "?response_type=code";
     	url += "&client_id=" + CLIENT_ID;
     	url += "&redirect_uri=" + getRedirectURL(host);
-    	url += "&scope=https://www.googleapis.com/auth/userinfo.email";
+    	url += "&scope=" + SCOPES;
     	url += "&hd=fcpsschools.net";
     	
     	return url;
 	}
 	
-	protected static String getAccessToken(String authCode, String host) throws IOException, ParseException {
+	protected static String getAccessToken(String authCode, String host) throws Exception {
     	// Open the connection to the access token thing
     	String params = "code=" + URLEncoder.encode(authCode, "UTF-8") +
     			"&client_id=" + CLIENT_ID +
@@ -55,12 +63,16 @@ public class GoogleOAuthClient {
     			"&redirect_uri=" + getRedirectURL(host) +
     			"&grant_type=authorization_code";
     	
-    	
-        URL url = new URL("https://accounts.google.com/o/oauth2/token");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+    	HttpURLConnection connection = null;
+    	try {
+	        URL url = new URL("https://accounts.google.com/o/oauth2/token");
+	        connection = (HttpURLConnection) url.openConnection();
+	        connection.setDoOutput(true);
+	        connection.setRequestMethod("POST");
+	        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+    	} catch(IOException e) {
+    		throw e;
+    	}
         
         // Write the output to the connection, then close it
         OutputStreamWriter writer = null;
@@ -89,33 +101,39 @@ public class GoogleOAuthClient {
 	        }
         } catch (IOException e) {
         	throw e;
-        	//resp.sendError(500, "IOException while reading input: " + e);
         } finally {
         	if (reader != null) {
         		reader.close();
         	}
         }
         
-        
         // check if 200
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        	throw new IOException("Response code not 200- " + connection.getResponseCode() + "\n" + output + "\n" + host);
+        	log.log(Level.WARNING, "Invalid response code: " + connection.getResponseCode(), output);
+        	throw new IOException("Response code was " + connection.getResponseCode());
         }
         
         // Parse the JSON.
         String access_token = null;
         try {
-        	JSONParser parser = new JSONParser();
-        	JSONObject obj = (JSONObject) parser.parse(output);
+        	JSONObject obj = (JSONObject) JSONValue.parse(output);
         	access_token = (String) obj.get("access_token");
-        } catch (ParseException e) {
+        } catch (Exception e) {
+        	log.log(Level.WARNING, "Error parsing JSON", e);
+        	log.log(Level.INFO, "JSON that failed", output);
         	throw e;
+        }
+        
+        if (access_token == null || access_token.isEmpty()) {
+        	log.log(Level.WARNING, "No access token found in JSON!");
+        	log.log(Level.INFO, "JSON that failed", output);
+        	throw new Exception("No access token found in JSON!");
         }
         
         return access_token;
 	}
 	
-	protected static String getUserEmail(String access_token) throws IOException, ParseException {
+	protected static String[] getUserData(String access_token) throws Exception {
 		HttpURLConnection connection = null;
 		BufferedReader reader = null;
 		String line, output = "";
@@ -136,15 +154,25 @@ public class GoogleOAuthClient {
 			throw e;
 		}
 		
-		String email = null;
+        // Parse the JSON.
+        String name = null, email = null;
         try {
-        	JSONParser parser = new JSONParser();
-        	JSONObject obj = (JSONObject) parser.parse(output);
+        	JSONObject obj = (JSONObject) JSONValue.parse(output);
+        	name = (String) obj.get("name");
         	email = (String) obj.get("email");
-        } catch (ParseException e) {
+        } catch (Exception e) {
+        	log.log(Level.WARNING, "Error parsing JSON", e);
+        	log.log(Level.INFO, "JSON that failed", output);
         	throw e;
         }
         
-        return email;
+        if (access_token == null || access_token.isEmpty()) {
+        	log.log(Level.WARNING, "No name/email found in JSON!");
+        	log.log(Level.INFO, "JSON that failed", output);
+        	throw new Exception("No name/email found in JSON!");
+        }
+        
+        String[] userData = {name, email};
+        return userData;
 	}
 }
