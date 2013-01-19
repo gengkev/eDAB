@@ -1,4 +1,4 @@
-angular.module('project', [])
+angular.module('project', ['server'])
 	.config(function($routeProvider) {
 		$routeProvider.
 			when('/agenda'  , {controller: AgendaCtrl  , templaceUrl: 'html/agenda.html'  }).
@@ -6,27 +6,30 @@ angular.module('project', [])
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
-	.factory('client', function($window) {
-		return {
-			login: function() {
-				$window.location.replace("login.jsp");
-			}
-		};
-	})
-	.run(function(client) {
-		client.logged_in = false;
+	.run(function(server) {
+		server.check_login();
+		
+		/* google analytics snippet */
+		var _gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
+		(function(d, t) {
+			var g = d.createElement(t),
+			    s = d.getElementsByTagName(t)[0];
+			g.src = '//www.google-analytics.com/ga.js';
+			s.parentNode.insertBefore(g, s);
+		}(document, 'script'));
 	});
+	
 
-function AppCtrl($scope, $location, client) {
-	$scope.$watch(function() { return client.logged_in; }, function(logged_in) {
-		$scope.logged_in = client.logged_in;
+function AppCtrl($scope, $location, server) {
+	$scope.$watch(function() { return server.logged_in; }, function(logged_in) {
+		$scope.logged_in = server.logged_in;
 	});
 	$scope.login = function() {
-		client.login();
+		server.login();
 	};
 }
 
-function NavCtrl($scope, $location, client) {
+function NavCtrl($scope, $location, server) {
 	$scope.$watch(function() { return $location.path(); }, function(path) {
 		$scope.currentPage = path;
 	});
@@ -41,14 +44,14 @@ function NavCtrl($scope, $location, client) {
 	};
 }
 
-function LandingCtrl($scope, $location, client) {
+function LandingCtrl($scope, $location, server) {
 }
 
-function AgendaCtrl($scope, $location, client) {
+function AgendaCtrl($scope, $location, server) {
 }
 
-function CalendarCtrl($scope, $location, client) {
+function CalendarCtrl($scope, $location, server) {
 }
 
-function SettingsCtrl($scope, $location, client) {
+function SettingsCtrl($scope, $location, server) {
 }

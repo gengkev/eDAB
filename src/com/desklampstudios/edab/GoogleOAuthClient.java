@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-public class GoogleOAuthClient {
+class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
 	
-	//private static final String SERVER_HOST = "https://edab-ds.appspot.com";
-	//private static final String DEBUG_HOST = "http://localhost:8888";
+	// private static final String SERVER_HOST = "https://edab-ds.appspot.com";
+	// private static final String DEBUG_HOST = "http://localhost:8888";
 	private static final String LOGIN_PATH = "/logincallback";
 	
 	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
@@ -27,7 +27,7 @@ public class GoogleOAuthClient {
 	private static final String SCOPES = "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email";
 	
 	/*
-	public static String getRedirectURL() {
+	protected static String getRedirectURL() {
     	if (LoginCallbackServlet.isProduction) {
     		return getRedirectURL(SERVER_HOST);
     	} else {
@@ -35,16 +35,16 @@ public class GoogleOAuthClient {
     	}
 	}
 	*/
-	public static String getRedirectURL(String host) {
+	protected static String getRedirectURL(String host) {
 		return host + LOGIN_PATH;
 	}
-	public static String getRequestHost(HttpServletRequest req) {
+	protected static String getRequestHost(HttpServletRequest req) {
 		return req.getScheme() + "://" +
 				req.getServerName() + ":" + 
 				req.getServerPort();
 	}
 	
-	public static String getEndpointURL(String host) {
+	protected static String getEndpointURL(String host) {
     	String url = "https://accounts.google.com/o/oauth2/auth";
     	url += "?response_type=code";
     	url += "&client_id=" + CLIENT_ID;
