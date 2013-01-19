@@ -6,8 +6,7 @@ angular.module('project', ['server'])
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
-	.run(function(server) {
-		server.check_login();
+	.run(function() {
 		
 		/* google analytics snippet */
 		var _gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
@@ -22,10 +21,10 @@ angular.module('project', ['server'])
 
 function AppCtrl($scope, $location, server) {
 	$scope.$watch(function() { return server.logged_in; }, function(logged_in) {
-		$scope.logged_in = server.logged_in;
+		$scope.logged_in = server.user.logged_in;
 	});
 	$scope.login = function() {
-		server.login();
+		server.user.login();
 	};
 }
 
