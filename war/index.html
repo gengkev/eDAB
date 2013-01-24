@@ -2,6 +2,7 @@
 <html lang="en" ng-app="project">
 <head>
 	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1"/>
 	<title>eDAB | Desklamp Studios</title>
 	<link rel="stylesheet" href="ext/normalize.css"/>
@@ -22,20 +23,42 @@
 	
 	<div class="container" ng-view></div>
 	
-	<div id="login-container" ng-hide="logged_in">
-		<div id="login">
-			<h1>eDAB brings your assignment book online.</h1>
-			<p>
-				eDAB is designed to do random stuff that I'm too lazy to write about right now.
-			</p>
-			<p>
-				<button class="btn-signin" ng-click="login()">
-					Sign in with fcpsschools.net
-				</button>
-			</p>
+	<div id="infobox-container" ng-show="infoboxState()">
+		<div id="infobox">
+			<section id="infobox-login" ng-cloak ng-show="infoboxState() == 'login'">
+				<h1>eDAB brings your assignment book online.</h1>
+				<p>
+					eDAB can help you organize your schedule bla bla bla.
+				</p>
+				<p>
+					<button class="btn-signin" ng-click="login()">
+						Sign in with your fcpsschools.net account
+					</button>
+				</p>
+				<details>
+					<summary>Your <a href="http://fcpsschools.net" target="_blank">fcpsschools.net</a> account 
+						is used to verify your student ID.
+					</summary>
+					<p>
+						Using FCPS Google Apps accounts allows us to verify your name and student ID 
+						quickly and reliably. However, currently, only 8th graders at Rachel Carson are
+						permitted, so we still must manually verify your ID.
+					</p>
+				</details>
+			</section>
+			<section id="infobox-loading" ng-cloak ng-show="infoboxState() == 'loading'">
+				<p>
+					<i class="icon-spinner icon-spin"></i>
+					&nbsp;Please wait, loading...
+				</p>
+			</section>
 		</div>
 	</div>
+	
+	<div id="error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
+	
 	<script src="ext/angular.min.js"></script>
 	<script src="app.js"></script>
+	<script src="server.js"></script>
 </body>
 </html>

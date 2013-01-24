@@ -2,20 +2,15 @@ package com.desklampstudios.edab;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URLEncoder;
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.utils.SystemProperty;
+
+import com.googlecode.objectify.Ref;
+import com.googlecode.objectify.ObjectifyService;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -24,28 +19,42 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class LoginCallbackServlet extends HttpServlet {
+	static {
+		ObjectifyService.register(User.class);
+	}
 	public static boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
 	private static final Logger log = Logger.getLogger(LoginCallbackServlet.class.getName());
 	
 	@Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		HttpSession session = req.getSession(false); // we should not be creating one right now!
+		
     	String error = req.getParameter("error");
     	String code = req.getParameter("code");
+    	String stateParam = req.getParameter("state");
     	
-    	if (error != null && !error.isEmpty()) {
+    	String state = (String) session.getAttribute("state");
+    	session.removeAttribute("state");
+    	
+    	if (state == null || !state.equals(stateParam)) {
+    		resp.sendError(400, "Invalid state");
+    		log.log(Level.INFO, "Invalid state", state);
+    		return;
+    	} else if (error != null && !error.isEmpty()) {
     		resp.sendError(531, "Authentication attempt unsuccessful");
     		log.log(Level.INFO, "Authentication attempt unsuccessful", error);
     		return;
     	} else if (code == null || code.isEmpty()) {
     		resp.sendError(400, "Invalid query parameters");
     		log.log(Level.INFO, "Invalid query parameters");
+    		return;
     	}
     	
     	String access_token = null;
     	try {
     		access_token = GoogleOAuthClient.getAccessToken(code, GoogleOAuthClient.getRequestHost(req));
     	} catch (Exception e) {
-    		resp.sendError(502, "Retrieving access token from Google failed");
+    		resp.sendError(502, "Retrieving access token from Google failed: " + e);
     		log.log(Level.WARNING, "Retrieving access token from Google failed", e);
     		return;
     	}
@@ -54,13 +63,12 @@ public class LoginCallbackServlet extends HttpServlet {
     	try {
     		userData = GoogleOAuthClient.getUserData(access_token);
     	} catch (Exception e) {
-    		resp.sendError(502, "Retrieving user data from Google failed");
+    		resp.sendError(502, "Retrieving user data from Google failed: " + e);
     		log.log(Level.WARNING, "Retrieving user data from Google failed", e);
     		return;
     	}
     	
-    	String name = userData[0],
-    			userId = userData[1].replaceFirst("@fcpsschools.net$", "");
+    	String name = userData[0], userId = userData[1];
         
         // print stuff to the output
     	/*
@@ -74,16 +82,18 @@ public class LoginCallbackServlet extends HttpServlet {
     	
     	
     	// let's store the user as a DB entry.
-    	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     	
-    	Query q = new Query("User")
-    					.addFilter("userId",
-    							Query.FilterOperator.EQUAL,
-    							userId);
+    	// find the user first
+    	Ref<User> userRef = ofy().load().type(User.class).filter("fcps_id", userId).first();
+    	User user = userRef.getValue(); // Ref.getValue() returns null if not found
     	
-    	Entity user = datastore.prepare(q).asSingleEntity();
-    	
-    	if (user == null) { // create an entity!
+    	if (user == null) { // woops.
+    		user = new User();
+    		user.name = name;
+    		user.fcps_id = userId;
+    		ofy().save().entity(user).now();
+    		
+    		/*
         	log.log(Level.INFO, "Adding user (name: " + name + ", userId: " + userId + ")");
         	
     		user = new Entity("User", userId); // but don't rely on userId as a key id
@@ -91,12 +101,10 @@ public class LoginCallbackServlet extends HttpServlet {
     		user.setProperty("userId", userId);
     		user.setProperty("created", new Date());
     		datastore.put(user);
+    		*/
     	}
-    	
-    	// get the session; if one doesn't exist, create one
-		HttpSession session = req.getSession(true);
 		
-		// store the user's email for auth
+		// store the reference in the session
 		session.setAttribute("userId", userId);
 		
 		// send the session id as HttpOnly
@@ -104,17 +112,14 @@ public class LoginCallbackServlet extends HttpServlet {
 		// String sessionid = session.getId();
 		// resp.setHeader("Set-Cookie", "JSESSIONID=" + sessionid + "; HttpOnly; Secure; Path=/; Expires=" + expiryDate);
 		
-		// Send the email and name as a cookie for the client.
-		// Who cares what the client does with it.
-		Cookie c = new Cookie("userInfo", URLEncoder.encode(userId, "UTF-8") + ":" + URLEncoder.encode(name, "UTF-8"));
-		c.setMaxAge(60 * 60 * 24 * 7);
-		c.setPath("/");
-		if (req.getScheme() == "https") {
-			c.setSecure(true);
-		}
-		resp.addCookie(c);
-		
 		// so, how about we actually do something with the response
-		resp.sendRedirect("/");
+		if (state.indexOf("|close") != -1) {
+			PrintWriter writer = resp.getWriter();
+			writer.println("<script>try { window.opener.loginCallback(); } catch(e) { alert(e); } window.close();</script>");
+			writer.println("You may now <a href=\"#\" onclick=\"window.close()\">close this window</a>.");
+			writer.close();
+		} else {
+			resp.sendRedirect("/");
+		}
     }
 }

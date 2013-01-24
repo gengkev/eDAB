@@ -44,13 +44,14 @@ class GoogleOAuthClient {
 				req.getServerPort();
 	}
 	
-	protected static String getEndpointURL(String host) {
+	protected static String getEndpointURL(String host, String state) {
     	String url = "https://accounts.google.com/o/oauth2/auth";
     	url += "?response_type=code";
     	url += "&client_id=" + CLIENT_ID;
     	url += "&redirect_uri=" + getRedirectURL(host);
     	url += "&scope=" + SCOPES;
     	url += "&hd=fcpsschools.net";
+    	url += "&state=" + state;
     	
     	return url;
 	}
@@ -90,14 +91,14 @@ class GoogleOAuthClient {
         
         // Get the input
         BufferedReader reader = null;
-        String line, output = "";
+        StringBuilder output = new StringBuilder();
+        String line;
         try {
 	        reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 	        
 	        // dump it all into a string
 	        while ((line = reader.readLine()) != null) {
-	            output += line;
-	            output += "\n";
+	            output.append(line);
 	        }
         } catch (IOException e) {
         	throw e;
@@ -109,23 +110,23 @@ class GoogleOAuthClient {
         
         // check if 200
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        	log.log(Level.WARNING, "Invalid response code: " + connection.getResponseCode(), output);
-        	throw new IOException("Response code was " + connection.getResponseCode());
+        	//log.log(Level.WARNING, "Invalid response code: " + connection.getResponseCode(), output);
+        	throw new IOException("Invalid response code: " + connection.getResponseCode());
         }
         
         // Parse the JSON.
         String access_token = null;
         try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output);
+        	JSONObject obj = (JSONObject) JSONValue.parse(output.toString());
         	access_token = (String) obj.get("access_token");
         } catch (Exception e) {
-        	log.log(Level.WARNING, "Error parsing JSON", e);
+        	//log.log(Level.WARNING, "Error parsing JSON", e);
         	log.log(Level.INFO, "JSON that failed", output);
         	throw e;
         }
         
         if (access_token == null || access_token.isEmpty()) {
-        	log.log(Level.WARNING, "No access token found in JSON!");
+        	//log.log(Level.WARNING, "No access token found in JSON!");
         	log.log(Level.INFO, "JSON that failed", output);
         	throw new Exception("No access token found in JSON!");
         }
@@ -136,7 +137,8 @@ class GoogleOAuthClient {
 	protected static String[] getUserData(String access_token) throws Exception {
 		HttpURLConnection connection = null;
 		BufferedReader reader = null;
-		String line, output = "";
+		StringBuilder output = new StringBuilder();
+		String line;
 		
 		try {
 			URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
@@ -146,33 +148,43 @@ class GoogleOAuthClient {
 	        
 	        reader = new BufferedReader(new InputStreamReader(url.openStream()));
             while ((line = reader.readLine()) != null) {
-                output += line;
-                output += "\n";
+                output.append(line);
+                output.append("\n");
             }
             reader.close();
 		} catch (IOException e) {
 			throw e;
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
 		}
 		
         // Parse the JSON.
         String name = null, email = null;
         try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output);
+        	JSONObject obj = (JSONObject) JSONValue.parse(output.toString());
         	name = (String) obj.get("name");
         	email = (String) obj.get("email");
         } catch (Exception e) {
-        	log.log(Level.WARNING, "Error parsing JSON", e);
+        	//log.log(Level.WARNING, "Error parsing JSON", e);
         	log.log(Level.INFO, "JSON that failed", output);
         	throw e;
         }
         
         if (access_token == null || access_token.isEmpty()) {
-        	log.log(Level.WARNING, "No name/email found in JSON!");
+        	//log.log(Level.WARNING, "No name/email found in JSON!");
         	log.log(Level.INFO, "JSON that failed", output);
         	throw new Exception("No name/email found in JSON!");
         }
         
-        String[] userData = {name, email};
+        // must be fcpsschools.net
+        if (!email.substring(email.length() - 16).equalsIgnoreCase("@fcpsschools.net")) {
+        	//log.log(Level.INFO, "Invalid email address: " + email);
+        	throw new Exception("Invalid email address: " + email);
+        }
+        
+        String[] userData = {name, email.substring(0, email.length() - 16)};
         return userData;
 	}
 }

@@ -6,25 +6,51 @@ angular.module('project', ['server'])
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
-	.run(function() {
+	.run(function($window) {
 		
 		/* google analytics snippet */
-		var _gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
+		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
 		(function(d, t) {
 			var g = d.createElement(t),
 			    s = d.getElementsByTagName(t)[0];
 			g.src = '//www.google-analytics.com/ga.js';
 			s.parentNode.insertBefore(g, s);
-		}(document, 'script'));
+		}($window.document, 'script'));
 	});
 	
 
-function AppCtrl($scope, $location, server) {
-	$scope.$watch(function() { return server.logged_in; }, function(logged_in) {
-		$scope.logged_in = server.user.logged_in;
+function AppCtrl($scope, $rootScope, $location, $window, server) {
+	$scope.$watch(function() { return server.auth.logged_in; }, function(logged_in) {
+		$scope.logged_in = logged_in;
+	});
+	$scope.$watch(function() { return server.user; }, function(user) {
+		$scope.user = user;
 	});
 	$scope.login = function() {
-		server.user.login();
+		server.auth.login();
+	};
+	
+	$scope.errorMsg = null;
+	(function() {
+		var timeout = null;
+		$rootScope.showError = function(str, time) {
+			if (timeout) {
+				$window.clearTimeout(timeout);
+			}
+			$scope.errorMsg = str;
+			timeout = $window.setTimeout(function() {
+				$scope.errorMsg = null;
+			}, time || 10000);
+		};
+	}());
+	
+	$scope.infoboxState = function() {
+		if ($scope.logged_in === false) {
+			return "login";
+		} else if ($scope.logged_in === null) {
+			return "loading";
+		}
+		return false;
 	};
 }
 
