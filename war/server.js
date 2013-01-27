@@ -15,6 +15,15 @@ angular.module('server', [])
 					_this.auth.check();
 				};
 			},
+			logout: function() {
+				$http({
+					method: "POST",
+					url: "/logout"
+				})
+				.then(function(resp) {
+					_this.auth.check();
+				});
+			},
 			logged_in: null,
 			check: function () {
 				//_this.auth.logged_in = false;

@@ -27,6 +27,15 @@
 	<servlet-class>com.desklampstudios.edab.LoginCallbackServlet</servlet-class>
 </servlet>
 
+<servlet-mapping>
+	<servlet-name>Logout</servlet-name>
+	<url-pattern>/logout</url-pattern>
+</servlet-mapping>
+<servlet>
+	<servlet-name>Logout</servlet-name>
+	<servlet-class>com.desklampstudios.edab.LogoutServlet</servlet-class>
+</servlet>
+
 <!-- Objectify filter -->
 <filter>
         <filter-name>ObjectifyFilter</filter-name>

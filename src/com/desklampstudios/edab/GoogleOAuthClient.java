@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.desklampstudios.edab.User.Gender;
+
 class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
 	
@@ -64,41 +66,122 @@ class GoogleOAuthClient {
     			"&redirect_uri=" + getRedirectURL(host) +
     			"&grant_type=authorization_code";
     	
+    	String output = null;
+    	try {
+    		output = fetchURL(
+    			"POST",
+    			"https://accounts.google.com/o/oauth2/token",
+    			params,
+    			"application/x-www-form-urlencoded;charset=UTF-8");
+    	} catch (IOException e) {
+    		throw e;
+    	}
+    	
+        // Parse the JSON.
+        String access_token = null;
+        try {
+        	JSONObject obj = (JSONObject) JSONValue.parse(output);
+        	access_token = (String) obj.get("access_token");
+        } catch (Exception e) {
+        	//log.log(Level.WARNING, "Error parsing JSON", e);
+        	log.log(Level.INFO, "JSON that failed", output);
+        	throw e;
+        }
+        
+        if (access_token == null) {
+        	//log.log(Level.WARNING, "No access token found in JSON!");
+        	log.log(Level.INFO, "JSON that failed", output);
+        	throw new Exception("No access token found in JSON!");
+        }
+        
+        return access_token;
+	}
+	
+	protected static User getUserData(String access_token) throws Exception {
+		String output = null;
+		
+		try {
+			output = fetchURL("GET", "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
+		} catch (IOException e) {
+			throw e;
+		}
+		
+        // Parse the JSON.
+        User user = new User();
+        try {
+        	JSONObject obj = (JSONObject) JSONValue.parse(output);
+        	String name = (String) obj.get("name");
+        	String email = (String) obj.get("email");
+        	boolean verifiedEmail = (Boolean) obj.get("verified_email");
+        	String gender = (String) obj.get("gender");
+        	
+        	if (name == null || email == null) {
+        		throw new Exception("missing fields");
+        	}
+            // must be fcpsschools.net
+            if (email.length() < 16 || !email.substring(email.length() - 16).equalsIgnoreCase("@fcpsschools.net") || 
+            		verifiedEmail != true) {
+            	throw new Exception("Invalid email address: " + email);
+            }
+            
+            user.name = name;
+            user.real_name = name;
+            user.fcps_id = email.substring(0, email.length() - 16);
+            
+            if (gender != null) {
+            	user.gender = Gender.valueOf(gender.toUpperCase());
+            }
+        } catch (Exception e) {
+        	log.log(Level.INFO, "JSON that failed", output);
+        	throw e;
+        }
+        
+        return user;
+	}
+	public static String fetchURL(String method, String loadUrl) throws IOException {
+		return fetchURL(method, loadUrl, null, null);
+	}
+	public static String fetchURL(String method, String loadUrl, String data, String contentType) throws IOException {
     	HttpURLConnection connection = null;
     	try {
-	        URL url = new URL("https://accounts.google.com/o/oauth2/token");
+	        URL url = new URL(loadUrl);
 	        connection = (HttpURLConnection) url.openConnection();
 	        connection.setDoOutput(true);
-	        connection.setRequestMethod("POST");
-	        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+	        connection.setRequestMethod(method);
+	        if (contentType != null) {
+	        	connection.setRequestProperty("Content-Type", contentType);
+	        }
     	} catch(IOException e) {
     		throw e;
     	}
         
-        // Write the output to the connection, then close it
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(connection.getOutputStream());
-            writer.write(params);
-        } catch (IOException e) {
-        	throw e;
-        } finally {
-        	if (writer != null) {
-        		writer.close();
-        	}
-        }
+    	if (data != null) {
+	        // Write the output to the connection, then close it
+	        OutputStreamWriter writer = null;
+	        try {
+	            writer = new OutputStreamWriter(connection.getOutputStream());
+	            writer.write(data);
+	        } catch (IOException e) {
+	        	throw e;
+	        } finally {
+	        	if (writer != null) {
+	        		writer.close();
+	        	}
+	        }
+    	}
         
         
         // Get the input
         BufferedReader reader = null;
-        StringBuilder output = new StringBuilder();
+        StringBuilder inputBuilder = new StringBuilder();
         String line;
         try {
 	        reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 	        
 	        // dump it all into a string
 	        while ((line = reader.readLine()) != null) {
-	            output.append(line);
+	        	inputBuilder.append(line);
+	        	inputBuilder.append("\n");
 	        }
         } catch (IOException e) {
         	throw e;
@@ -108,83 +191,9 @@ class GoogleOAuthClient {
         	}
         }
         
-        // check if 200
-        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        	//log.log(Level.WARNING, "Invalid response code: " + connection.getResponseCode(), output);
-        	throw new IOException("Invalid response code: " + connection.getResponseCode());
-        }
+        connection.disconnect();
         
-        // Parse the JSON.
-        String access_token = null;
-        try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output.toString());
-        	access_token = (String) obj.get("access_token");
-        } catch (Exception e) {
-        	//log.log(Level.WARNING, "Error parsing JSON", e);
-        	log.log(Level.INFO, "JSON that failed", output);
-        	throw e;
-        }
-        
-        if (access_token == null || access_token.isEmpty()) {
-        	//log.log(Level.WARNING, "No access token found in JSON!");
-        	log.log(Level.INFO, "JSON that failed", output);
-        	throw new Exception("No access token found in JSON!");
-        }
-        
-        return access_token;
-	}
-	
-	protected static String[] getUserData(String access_token) throws Exception {
-		HttpURLConnection connection = null;
-		BufferedReader reader = null;
-		StringBuilder output = new StringBuilder();
-		String line;
-		
-		try {
-			URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
-	        connection = (HttpURLConnection) url.openConnection();
-	        connection.setRequestMethod("GET");
-	        // connection.setRequestProperty("Authorization", "Bearer " + access_token);
-	        
-	        reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            while ((line = reader.readLine()) != null) {
-                output.append(line);
-                output.append("\n");
-            }
-            reader.close();
-		} catch (IOException e) {
-			throw e;
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		
-        // Parse the JSON.
-        String name = null, email = null;
-        try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output.toString());
-        	name = (String) obj.get("name");
-        	email = (String) obj.get("email");
-        } catch (Exception e) {
-        	//log.log(Level.WARNING, "Error parsing JSON", e);
-        	log.log(Level.INFO, "JSON that failed", output);
-        	throw e;
-        }
-        
-        if (access_token == null || access_token.isEmpty()) {
-        	//log.log(Level.WARNING, "No name/email found in JSON!");
-        	log.log(Level.INFO, "JSON that failed", output);
-        	throw new Exception("No name/email found in JSON!");
-        }
-        
-        // must be fcpsschools.net
-        if (!email.substring(email.length() - 16).equalsIgnoreCase("@fcpsschools.net")) {
-        	//log.log(Level.INFO, "Invalid email address: " + email);
-        	throw new Exception("Invalid email address: " + email);
-        }
-        
-        String[] userData = {name, email.substring(0, email.length() - 16)};
-        return userData;
+        String input = inputBuilder.toString();
+        return input;
 	}
 }

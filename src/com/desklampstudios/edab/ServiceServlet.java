@@ -100,7 +100,7 @@ public class ServiceServlet extends HttpServlet {
 	}
 	protected static Object getUser(HttpSession session) throws Exception {
 		String userId = (String) session.getAttribute("userId");
-		if (userId == null || userId.isEmpty()) {
+		if (userId == null) {
 			throw new Exception("authentication_required");
 		}
 		User user = null;
@@ -112,13 +112,14 @@ public class ServiceServlet extends HttpServlet {
 		} catch (Exception e) {
 			throw e;
 		}
-
+		
 		Map map = new LinkedHashMap();
-		map.put("given_name", user.given_name);
-		map.put("family_name", user.family_name);
+		map.put("real_name", user.real_name);
 		map.put("name", user.name);
 		map.put("fcps_id", user.fcps_id);
-		map.put("gender", user.getGender());
+		if (user.gender != null) {
+			map.put("gender", user.gender.toString());
+		}
 		return map;
 	}
 }

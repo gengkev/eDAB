@@ -29,6 +29,9 @@ function AppCtrl($scope, $rootScope, $location, $window, server) {
 	$scope.login = function() {
 		server.auth.login();
 	};
+	$scope.logout = function() {
+		server.auth.logout();
+	};
 	
 	$scope.errorMsg = null;
 	(function() {

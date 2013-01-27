@@ -6,10 +6,7 @@
 		Student ID: {{user.fcps_id}}
 	</p>
 	<p>
-		<a href="https://accounts.google.com/b/0/IssuedAuthSubTokens" target="_blank">Revoke tokens</a> (change user in upper right-hand corner if necessary)
-	</p>
-	<p>
-		<a href="javascript:document.cookie=null;location.reload();">Delete cookies</a> (sign out)
+		<a ng-click="logout()">Sign out and revoke tokens</a>
 	</p>
 </fieldset>
 <fieldset>

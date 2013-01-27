@@ -10,26 +10,15 @@ import com.googlecode.objectify.annotation.Index;
 
 @Entity
 class User {
-	@Id Long id;
-	String given_name;
-	String family_name;
+	@Id String id; // same as fcps_id
 	@Index String name;
+	String real_name;
 	@Index Key<Team> team;
 	@Index List<Key<Course>> courses;
 	@Index String fcps_id;
-	String gplus_id;
-	String fb_id;
-	int gender; // 0 - male, 1 - female, 2 - other
+	Gender gender;
 	
-	String getGender() {
-		switch (this.gender) {
-		case 0:
-			return "male";
-		case 1:
-			return "female";
-		case 2:
-			return "other";
-		}
-		return "";
+	enum Gender {
+		MALE, FEMALE, OTHER
 	}
 }
