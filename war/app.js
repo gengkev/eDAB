@@ -33,6 +33,10 @@ function AppCtrl($scope, $rootScope, $location, $window, server) {
 		server.auth.logout();
 	};
 	
+	$window.bla = function() {
+		return server.rpc._request("idk", []);
+	};
+	
 	$scope.errorMsg = null;
 	(function() {
 		var timeout = null;

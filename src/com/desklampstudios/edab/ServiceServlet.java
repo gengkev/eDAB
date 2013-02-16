@@ -1,5 +1,7 @@
 package com.desklampstudios.edab;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,14 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.ParseException;
 
-import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.ObjectifyService;
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class ServiceServlet extends HttpServlet {
 	static {
@@ -29,6 +27,7 @@ public class ServiceServlet extends HttpServlet {
 	}
 	private static final Logger log = Logger.getLogger(LoginCallbackServlet.class.getName());
 	
+	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpSession session = req.getSession();
 		

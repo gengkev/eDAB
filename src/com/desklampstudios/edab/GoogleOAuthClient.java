@@ -1,11 +1,6 @@
 package com.desklampstudios.edab;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +12,7 @@ import org.json.simple.JSONValue;
 
 import com.desklampstudios.edab.User.Gender;
 
-class GoogleOAuthClient {
+public class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
 	
 	// private static final String SERVER_HOST = "https://edab-ds.appspot.com";
@@ -68,7 +63,7 @@ class GoogleOAuthClient {
     	
     	String output = null;
     	try {
-    		output = fetchURL(
+    		output = Utils.fetchURL(
     			"POST",
     			"https://accounts.google.com/o/oauth2/token",
     			params,
@@ -101,7 +96,7 @@ class GoogleOAuthClient {
 		String output = null;
 		
 		try {
-			output = fetchURL("GET", "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
+			output = Utils.fetchURL("GET", "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
 		} catch (IOException e) {
 			throw e;
 		}
@@ -137,63 +132,5 @@ class GoogleOAuthClient {
         }
         
         return user;
-	}
-	public static String fetchURL(String method, String loadUrl) throws IOException {
-		return fetchURL(method, loadUrl, null, null);
-	}
-	public static String fetchURL(String method, String loadUrl, String data, String contentType) throws IOException {
-    	HttpURLConnection connection = null;
-    	try {
-	        URL url = new URL(loadUrl);
-	        connection = (HttpURLConnection) url.openConnection();
-	        connection.setDoOutput(true);
-	        connection.setRequestMethod(method);
-	        if (contentType != null) {
-	        	connection.setRequestProperty("Content-Type", contentType);
-	        }
-    	} catch(IOException e) {
-    		throw e;
-    	}
-        
-    	if (data != null) {
-	        // Write the output to the connection, then close it
-	        OutputStreamWriter writer = null;
-	        try {
-	            writer = new OutputStreamWriter(connection.getOutputStream());
-	            writer.write(data);
-	        } catch (IOException e) {
-	        	throw e;
-	        } finally {
-	        	if (writer != null) {
-	        		writer.close();
-	        	}
-	        }
-    	}
-        
-        
-        // Get the input
-        BufferedReader reader = null;
-        StringBuilder inputBuilder = new StringBuilder();
-        String line;
-        try {
-	        reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	        
-	        // dump it all into a string
-	        while ((line = reader.readLine()) != null) {
-	        	inputBuilder.append(line);
-	        	inputBuilder.append("\n");
-	        }
-        } catch (IOException e) {
-        	throw e;
-        } finally {
-        	if (reader != null) {
-        		reader.close();
-        	}
-        }
-        
-        connection.disconnect();
-        
-        String input = inputBuilder.toString();
-        return input;
 	}
 }

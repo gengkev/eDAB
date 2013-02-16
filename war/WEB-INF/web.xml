@@ -6,7 +6,7 @@
 </servlet-mapping>
 <servlet>
 	<servlet-name>service</servlet-name>
-	<servlet-class>com.desklampstudios.edab.ServiceServlet</servlet-class>
+	<servlet-class>com.desklampstudios.edab.ServiceServlet3</servlet-class>
 </servlet>
 
 <servlet-mapping>
@@ -61,12 +61,13 @@
     </user-data-constraint>
 </security-constraint>
 
-<!-- Serve index.html with STS for one week -->
+<session-config>
+    <session-timeout>604800</session-timeout>
+</session-config>
+
+<!-- Serve STS for one week -->
 <static-files>
-    <include path="/">
-        <http-header name="Strict-Transport-Security" value="max-age=604800"/>
-    </include>
-    <include path="/index.html">
+    <include path="/*">
         <http-header name="Strict-Transport-Security" value="max-age=604800"/>
     </include>
 </static-files>

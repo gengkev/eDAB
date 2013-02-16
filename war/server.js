@@ -27,7 +27,7 @@ angular.module('server', [])
 			logged_in: null,
 			check: function () {
 				//_this.auth.logged_in = false;
-				_this.rpc._request("getUser", null)
+				_this.rpc._request("getCurrentUser", null)
 					.then(function(resp) {
 						if (resp.data && resp.data.result && !resp.data.error) {
 							console.log(resp);

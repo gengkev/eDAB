@@ -1,22 +1,20 @@
 package com.desklampstudios.edab;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.URLEncoder;
-
-import com.google.appengine.api.utils.SystemProperty;
-
-import com.googlecode.objectify.Ref;
-import com.googlecode.objectify.ObjectifyService;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-import javax.servlet.http.Cookie;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.google.appengine.api.utils.SystemProperty;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Ref;
 
 public class LoginCallbackServlet extends HttpServlet {
 	static {
@@ -27,7 +25,13 @@ public class LoginCallbackServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession session = req.getSession(false); // we should not be creating a new session!
+		HttpSession session;
+		if (req.isRequestedSessionIdValid()) {
+			session = req.getSession(false); // we should not be creating a new session!
+		} else {
+			resp.sendError(500, "Session invalid");
+			return;
+		}
 		
 		// get query params
     	String error = req.getParameter("error");
@@ -35,8 +39,7 @@ public class LoginCallbackServlet extends HttpServlet {
     	String stateParam = req.getParameter("state");
     	
     	// get the state from the session, and promptly delete it
-    	String state = (String) session.getAttribute("state");
-    	session.removeAttribute("state");
+    	String state = (String) session.getAttribute("nonce");
     	
     	// make sure the query param matches the stored state (CSRF protection)
     	if (state == null || !state.equals(stateParam)) {
