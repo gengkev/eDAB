@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import com.desklampstudios.edab.User.Gender;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 public class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
@@ -75,8 +75,9 @@ public class GoogleOAuthClient {
         // Parse the JSON.
         String access_token = null;
         try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output);
-        	access_token = (String) obj.get("access_token");
+        	ObjectMapper m = new ObjectMapper();
+        	JsonNode rootNode = m.readTree(output);
+        	access_token = rootNode.path("access_token").textValue();
         } catch (Exception e) {
         	//log.log(Level.WARNING, "Error parsing JSON", e);
         	log.log(Level.INFO, "JSON that failed", output);
@@ -104,11 +105,13 @@ public class GoogleOAuthClient {
         // Parse the JSON.
         User user = new User();
         try {
-        	JSONObject obj = (JSONObject) JSONValue.parse(output);
-        	String name = (String) obj.get("name");
-        	String email = (String) obj.get("email");
-        	boolean verifiedEmail = (Boolean) obj.get("verified_email");
-        	String gender = (String) obj.get("gender");
+        	ObjectMapper m = new ObjectMapper();
+        	JsonNode rootNode = m.readTree(output);
+        	
+        	String name = rootNode.path("name").textValue();
+        	String email = rootNode.path("email").textValue();
+        	boolean verifiedEmail = (Boolean) rootNode.get("verified_email").booleanValue();
+        	String gender = rootNode.path("gender").textValue();
         	
         	if (name == null || email == null) {
         		throw new Exception("missing fields");
@@ -127,7 +130,7 @@ public class GoogleOAuthClient {
             	user.gender = Gender.valueOf(gender.toUpperCase());
             }
         } catch (Exception e) {
-        	log.log(Level.INFO, "JSON that failed", output);
+        	log.log(Level.INFO, "JSON that failed: " + output);
         	throw e;
         }
         

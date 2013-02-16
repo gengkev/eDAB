@@ -157,7 +157,6 @@ public class ModifiedJsonRpcServer extends JsonRpcServer {
 	
 	public void handleObject(ObjectNode node, OutputStream ops, String currentUserId)
 			throws IOException {
-		LOGGER.info("bla: " +node.toString());
 		JsonNode paramsNode = node.get("params");
 		ArrayNode paramsArrNode;
 		
@@ -175,7 +174,6 @@ public class ModifiedJsonRpcServer extends JsonRpcServer {
 		
 		node.put("params", paramsArrNode);
 		
-		LOGGER.info("bla: " +node.toString());
 		super.handleObject(node, ops);
 	}
 	
