@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.desklampstudios.edab.User.Gender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 public class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
@@ -110,7 +109,7 @@ public class GoogleOAuthClient {
         	
         	String name = rootNode.path("name").textValue();
         	String email = rootNode.path("email").textValue();
-        	boolean verifiedEmail = (Boolean) rootNode.get("verified_email").booleanValue();
+        	boolean verifiedEmail = rootNode.get("verified_email").booleanValue();
         	String gender = rootNode.path("gender").textValue();
         	
         	if (name == null || email == null) {

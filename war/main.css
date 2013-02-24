@@ -1,27 +1,32 @@
+/*
 * {
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
+*/
 
 .center {
 	text-align: center;
 }
 
-
-#nav_container {
+.navbar {
 	position: fixed;
 	width: 100%;
 	top: 0;
 }
+
 nav {
 	border: 1px solid #ccc;
 	border-top-style: none;
+	border-radius: 0 0 10px 10px;
+	
 	padding: 10px 20px;
 	margin: auto;
-	max-width: 940px; /* 940px + 20px padding = 960px */
+	/* max-width: 940px; * 940px + 20px padding = 960px */
 	background-color: #fff;
-	height: 30px; /* + 20px padding = 50px */
+	height: 30px; /* + 20px padding = 50px */ 
 	overflow: hidden; /* hmm we'll have to deal with mobile */
 }
+
 nav ul {
 	display: inline-block;
 	padding: 0;
@@ -40,9 +45,11 @@ nav ul li a {
 	padding: 6px 8px;
 	font-size: 16px;
 }
-nav ul li a.active, nav ul li a:hover, nav ul li a:focus, nav ul li a:active {
+nav ul li.active a, nav ul li:hover a, nav ul li:focus a, nav ul li:active a {
 	background-color: hsl(0, 0%, 87%);
-	/*color: hsl(0, 0%, 35%);*/
+	/* color: hsl(0, 0%, 35%); */
+	color: hsl(0, 0%, 55%);
+	text-decoration: none;
 }
 nav a.brand {
 	display: inline-block;
@@ -55,28 +62,31 @@ nav a.brand {
 nav a.brand:hover {
 	color: hsl(0, 0%, 35%);
 }
+
+/*
 .container {
-	max-width: 940px; /* 940px + 20px padding = 960px */
+	max-width: 940px; // 940px + 20px padding = 960px 
 	border: 1px solid #CCC;
 	border-top-style: none;
 	margin: auto;
-	margin-top: 51px; /* nav height + padding */
+	margin-top: 51px; // nav height + padding
 	padding: 20px;
 }
+*/
 
 .btn-signin {
     border: 2px solid hsl(0, 80%, 56%);
-	border-radius: 4px;
+	border-radius: 6px;
     color: #fff;
+	font-size: 18px;
+	padding: 8px 8px 8px 48.5px;
     background-color: hsl(3, 99%, 65%);
-	
+
 	background-image: url(fcps.png);
 	background-repeat: no-repeat;
 	
 	background-position: 6px center;
 	background-size: 37.5px 32px;
-	font-size: 18px;
-	padding: 8px 8px 8px 48.5px;
 }
 
 .btn-signin:hover, .btn-signin:focus, .btn-signin:active {
@@ -91,13 +101,13 @@ nav a.brand:hover {
 	left: 0;
 	z-index: 3;
 	text-align: center;
-	background-color: rgb(222, 222, 222);
-	background-color: rgba(200, 200, 200, 0.6);
+	background-color: rgb(102, 102, 102);
+	background-color: rgba(0, 0, 0, 0.6);
 }
 #infobox {
 	background-color: white;
 	border-radius: 8px;
-	box-shadow: 0 0 10px 3px rgb(150, 150, 150);
+	box-shadow: 0 0 3px 1px rgb(150, 150, 150);
 	display: inline-block;
 	width: 640px;
 	max-width: 640px;
@@ -116,10 +126,7 @@ nav a.brand:hover {
 #infobox-loading {
 	font-size: 24px;
 }
-#infobox h1 {
-	margin-top: 5px;
-}
-
+/*
 #error {
 	background-color: red;
 	color: white;
@@ -128,4 +135,4 @@ nav a.brand:hover {
 	padding: 5px 10px;
 	z-index: 4;
 	border-radius: 0 0 5px 5px;
-}
+}*/

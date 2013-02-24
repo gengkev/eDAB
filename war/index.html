@@ -1,37 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="project">
+<html lang="en" ng-app="project" itemscope itemtype="http://schema.org/WebApplication" prefix="og: http://ogp.me/ns#">
 <head>
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1"/>
+	<meta itemprop="name" property="og:title" content="eDAB"/>
 	<title>eDAB | Desklamp Studios</title>
-	<link rel="stylesheet" href="ext/normalize.css"/>
+	<link rel="prerender" href="/service"/>
+	<link rel="stylesheet" href="ext/bootstrap.min.css"/>
+	<link rel="stylesheet" href="ext/bootstrap-responsive.min.css"/>
 	<link rel="stylesheet" href="ext/font-awesome.min.css"/>
 	<link rel="stylesheet" href="main.css"/>
 </head>
 <body ng-controller="AppCtrl">
-	<div id="nav_container"> <!-- fixed at top 100% -->
-		<nav>
-			<a class="brand">eDAB</a>
-			<ul class="navbar" ng-controller="NavCtrl">
-				<li ng-repeat="page in pages">
-					<a href="#{{page.path}}" ng-class="{active: onPage(page.path)}" ng-bind="page.name"></a>
-				</li>
-			</ul>
-		</nav>
+	<div class="container">
+	
+		<div id="navbar">
+			<nav>
+				<a class="brand">eDAB</a>
+				<ul ng-controller="NavCtrl">
+					<li ng-repeat="page in pages" ng-class="{active: onPage(page.path)}">
+						<a href="#{{page.path}}" ng-bind="page.name"></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		
+		<div class="alert alert-error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
+		
+		<div class="page_content" ng-view></div>
 	</div>
 	
-	<div class="container" ng-view></div>
-	
-	<div id="infobox-container" ng-show="infoboxState()">
+	<div id="infobox-container" fade-in-out="infoboxState()" timeout="1500">
 		<div id="infobox">
+			<div class="alert alert-error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
 			<section id="infobox-login" ng-cloak ng-show="infoboxState() == 'login'">
-				<h1>eDAB brings your assignment book online.</h1>
+				<h3>eDAB brings your assignment book online.</h3>
 				<p>
 					eDAB can help you organize your schedule bla bla bla.
 				</p>
 				<p>
 					<button class="btn-signin" ng-click="login()">
+						<!--img src="fcps.png" width="37.5" height="32" alt="FCPS"/-->
 						Sign in with your fcpsschools.net account
 					</button>
 				</p>
@@ -41,12 +51,11 @@
 					</summary>
 					<p>
 						Using FCPS Google Apps accounts allows us to verify your name and student ID 
-						quickly and reliably. However, currently, only 8th graders at Rachel Carson are
-						permitted, so we still must manually verify your ID.
+						quickly and reliably. However, we still must manually verify that you attend RCMS.
 					</p>
 				</details>
 			</section>
-			<section id="infobox-loading" ng-cloak ng-show="infoboxState() == 'loading'">
+			<section id="infobox-loading" ng-show="infoboxState() == 'loading'">
 				<p>
 					<i class="icon-spinner icon-spin"></i>
 					&nbsp;Please wait, loading...
@@ -55,10 +64,11 @@
 		</div>
 	</div>
 	
-	<div id="error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
-	
 	<script src="ext/angular.min.js"></script>
 	<script src="app.js"></script>
 	<script src="server.js"></script>
+	<!-- woo g+ snippet dont feel like putting async loading code so heres a nice attribute -->
+	<script src="https://apis.google.com/js/plusone.js" async></script>
+</script>
 </body>
 </html>

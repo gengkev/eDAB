@@ -16,6 +16,7 @@ import com.google.appengine.api.utils.SystemProperty;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
 
+@SuppressWarnings("serial")
 public class LoginCallbackServlet extends HttpServlet {
 	static {
 		ObjectifyService.register(User.class);
@@ -104,7 +105,8 @@ public class LoginCallbackServlet extends HttpServlet {
 		session.setAttribute("userId", userData.fcps_id);
 		
 		// if we stored closeWindow, then send a callback to the opener, and close the window. Otherwise, send a redirect.
-		if ((Boolean) session.getAttribute("closeWindow") == true) {
+		Object closeWindow = session.getAttribute("closeWindow");
+		if (closeWindow != null && ((Boolean) closeWindow)) {
 			session.removeAttribute("closeWindow");
 			
 			PrintWriter writer = resp.getWriter();

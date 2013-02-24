@@ -1,8 +1,9 @@
 angular.module('project', ['server'])
 	.config(function($routeProvider) {
 		$routeProvider.
-			when('/agenda'  , {controller: AgendaCtrl  , templaceUrl: 'html/agenda.html'  }).
+			when('/agenda'  , {controller: AgendaCtrl  , templateUrl: 'html/agenda.html'  }).
 			when('/calendar', {controller: CalendarCtrl, templateUrl: 'html/calendar.html'}).
+			when('/courses' , {controller: CoursesCtrl , templateUrl: 'html/courses.html' }).
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
@@ -16,6 +17,46 @@ angular.module('project', ['server'])
 			g.src = '//www.google-analytics.com/ga.js';
 			s.parentNode.insertBefore(g, s);
 		}($window.document, 'script'));
+		
+	}).directive("fadeInOut", function($timeout) {
+		return function(scope, element, attrs) {
+			var doShow = true, isShowing = true, 
+			    timeout = parseInt(attrs.timeout) || 2000,
+			    timeoutId;
+			
+			function show() {
+				if (timeoutId) $timeout.cancel(timeoutId);
+				
+				element[0].style.transition = (timeout / 1000) + "s ease";
+				element[0].style.display = "block";
+				
+				$timeout(function() {
+					element[0].style.opacity = "1";
+				}, 0);
+			}
+			function hide() {
+				if (timeoutId) $timeout.cancel(timeoutId);
+				
+				element[0].style.transition = (timeout / 1000) + "s ease";
+				element[0].style.opacity = "0";
+				
+				timeoutId = $timeout(function() {
+					timeoutId = null;
+					element[0].style.display = "none";
+				}, timeout);
+			}
+			
+			scope.$watch(attrs.fadeInOut, function(value) {
+				var newDoShow = !!value;
+				console.log("newDoShow", newDoShow);
+				if (newDoShow != doShow) {					
+					if (newDoShow) show();
+					else hide();
+					
+					doShow = newDoShow;
+				}
+			});
+		};
 	});
 	
 
@@ -68,7 +109,7 @@ function NavCtrl($scope, $location, server) {
 	$scope.pages = [
 		{name: 'Agenda'  , path: '/agenda'  },
 		{name: 'Calendar', path: '/calendar'},
-		{name: 'Classes' , path: '/classes' },
+		{name: 'Courses' , path: '/courses' },
 		{name: 'Settings', path: '/settings'}
 	];
 	$scope.onPage = function(path) {
@@ -85,5 +126,26 @@ function AgendaCtrl($scope, $location, server) {
 function CalendarCtrl($scope, $location, server) {
 }
 
+function CoursesCtrl($scope, $location, server) {
+}
+
 function SettingsCtrl($scope, $location, server) {
+	$scope.nameChangeRequest = function() {
+		alert("Sorry, Jenny.");
+	};
+	$scope.schools = [
+		{"name": "Rachel Carson MS"}
+	];
+	$scope.teams = [
+		{"grade": 7, "letter": "A", "name": "Star Jumps"},
+		{"grade": 7, "letter": "B", "name": "Trail Mix"},
+		{"grade": 7, "letter": "C", "name": "Dictionaries"},
+		{"grade": 7, "letter": "D", "name": "Dream On"},
+		{"grade": 7, "letter": "E", "name": "Eggplants"},
+		{"grade": 8, "letter": "V", "name": "Valedictors"},
+		{"grade": 8, "letter": "W", "name": "Narwhals"},
+		{"grade": 8, "letter": "X", "name": "Radiation"},
+		{"grade": 8, "letter": "Y", "name": "Bumblebees"},
+		{"grade": 8, "letter": "Z", "name": "Zebras"}
+	];
 }

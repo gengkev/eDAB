@@ -5,7 +5,9 @@ angular.module('server', [])
 		var _this = this;
 		_this.auth = {
 			login: function() {
-				/*$window.location.replace("/login");*/
+				/*
+				$window.location.replace("/login");
+				*/
 				$window.open(
 					"login?close",
 					"login",

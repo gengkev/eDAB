@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("serial")
 public class LoginServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(LoginServlet.class.getName());
 	

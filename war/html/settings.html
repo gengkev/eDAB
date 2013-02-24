@@ -1,19 +1,82 @@
 <fieldset>
 	<legend>Login details</legend>
+	<form class="form-horizontal">
+		<div class="control-group">
+			<label class="control-label">Name</label>
+			<div class="controls">
+				<input type="text" ng-model="user.name" disabled/>
+				<a href="" ng-click="nameChangeRequest()">Submit change request</a>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">Student ID</label>
+			<div class="controls">
+				<div class="input-append">
+					<input type="text" class="input-small" ng-model="user.fcps_id" disabled/>
+					<span class="add-on">@fcpsschools.net</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">Gender</label>
+			<div class="controls">
+				<label class="radio inline">
+					<input type="radio" ng-model="user.gender" name="gender" value="male"/>
+					Male
+				</label>
+				<label class="radio inline">
+					<input type="radio" ng-model="user.gender" name="gender" value="female"/>
+					Female
+				</label>
+				<label class="radio inline">
+					<input type="radio" ng-model="user.gender" name="gender" value="other"/>
+					Other
+				</label>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">School</label>
+			<div class="controls">
+				<select ng-model="user.school" ng-options="s.name for s in schools">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">Team</label>
+			<div class="controls">
+				<select ng-model="user.team" ng-options="(t.letter+' ('+t.name+')') group by t.grade for t in teams">
+					<option value=""></option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">Courses</label>
+			<div class="controls">
+				<button class="btn">Edit courses</button>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<div class="controls">
+				<button class="btn btn-primary">Save</button>
+				<button class="btn">Discard</button>
+			</div>
+		</div>
+	</form>
 	<p>
-		Name: {{user.name}}
-		<br/>
-		Student ID: {{user.fcps_id}}
-	</p>
-	<p>
-		<a ng-click="logout()">Sign out and revoke tokens</a>
+		<button class="btn btn-danger" ng-click="logout()">Sign out and revoke tokens</button>
 	</p>
 </fieldset>
-<fieldset>
+<fieldset itemscope itemprop="author">
 	<legend>About</legend>
 	<p>
-		eDAB is a product of <a href="http://gengkev.github.com/desklampstudios">Desklamp Studios</a>. 
-		It was coded and designed by Kevin Geng, Richard Chung, and Jenny Zhang.
+		eDAB is a product of <a href="http://gengkev.github.com/desklampstudios" itemprop="url">Desklamp Studios</a>.
 	</p>
 	<p>
 		<div class="g-plus" data-href="https://plus.google.com/113383006901215901732" data-height="131" data-width="350"></div>

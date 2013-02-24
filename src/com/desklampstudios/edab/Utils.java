@@ -10,9 +10,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
@@ -21,6 +26,12 @@ public class Utils {
 	public static final String JsonPad = ")]}',\n";
 	
 	public static final int sessionTimeout = 60 * 60 * 24 * 7; // 7 days in seconds
+	
+	// Uploading this onto Github may not be the best idea.
+	// But it's not like anyone's gonna make rainbow tables for this or even cares about this project.
+	private static final String hashingSalt = "Tripping across the blurry line between friends and more than friends";
+	
+	public static final int nonceBytes = 6; // the session id is only 6 anyway =_=
 	
 	// Short constructor for fetchURL that don't need to send data.
 	public static String fetchURL(String method, String loadUrl) throws IOException {
@@ -93,6 +104,7 @@ public class Utils {
         }
         return inputBuilder.toString();
 	}
+	
 	// Helper function that's close to encodeURIComponent in JS.
 	// See http://stackoverflow.com/q/607176/689161
 	public static String encodeURIComponent(String input) {
@@ -103,27 +115,53 @@ public class Utils {
 		} catch (UnsupportedEncodingException e) {
 			// this should never happen.
 			log.log(Level.WARNING, "Something went wrong", e);
+			return null;
 		}
 		
 		return result;
 	}
 	
+	// http://stackoverflow.com/q/9655181/
+	public static String bytesToHexString(byte[] bytes) {
+		StringBuilder sb = new StringBuilder();
+		for (byte b : bytes) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+		return sb.toString();
+	}
+	
 	// helper function to generate a random nonce. Gets 8 bytes of random bits 
 	// from SecureRandom, and converts it into hexadecimal to put into a StringBuilder.
+	/*
 	public static String generateNonce(int byteCount) {
 		SecureRandom rand = new SecureRandom();
 		byte[] bytes = new byte[byteCount];
 		rand.nextBytes(bytes);
 		
-		StringBuilder nonceBuilder = new StringBuilder();
-		for (byte b : bytes) {
-			String hex = Integer.toHexString((int) (b + 128)); // shifts [-128, 127] to [0, 255]
-			if (hex.length() < 2) {
-				nonceBuilder.append("0");
-			}
-			assert hex.length() == 2;
-			nonceBuilder.append(hex);
+		return bytesToHexString(bytes);
+	}
+	*/
+	
+	public static String getNonceFromSessionId(String sessionId) {
+		Mac mac = null;
+		try {
+			mac = Mac.getInstance("HmacSha256");
+		} catch (NoSuchAlgorithmException e) {
+			// this should never happen.
+			log.log(Level.WARNING, "Something went wrong", e);
+			return null;
 		}
-		return nonceBuilder.toString();
+		SecretKeySpec secret = new SecretKeySpec(Utils.hashingSalt.getBytes(), "HmacSha256");
+		try {
+			mac.init(secret);
+		} catch (InvalidKeyException e) {
+			// this should never happen.
+			log.log(Level.WARNING, "Something went wrong", e);
+			return null;
+		}
+		byte[] shaDigest = mac.doFinal(sessionId.getBytes());
+		
+		// take the first (nonceBytes) bytes
+		return bytesToHexString(Arrays.copyOfRange(shaDigest, 0, nonceBytes));
 	}
 }

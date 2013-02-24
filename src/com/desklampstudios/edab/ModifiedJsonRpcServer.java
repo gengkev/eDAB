@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +17,8 @@ import com.googlecode.jsonrpc4j.JsonRpcServer;
 import com.googlecode.jsonrpc4j.NoCloseInputStream;
 import com.googlecode.jsonrpc4j.NoCloseOutputStream;
 
+// derp this is just copypasting a lot of code from JsonRpcServer
+// so I can use the freaking user id
 public class ModifiedJsonRpcServer extends JsonRpcServer {
     private static final Logger LOGGER = Logger.getLogger(ModifiedJsonRpcServer.class.getName());
     
@@ -28,8 +29,7 @@ public class ModifiedJsonRpcServer extends JsonRpcServer {
 	
 	ObjectMapper mapper = new ObjectMapper();
 	
-	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response)
+	public void handle(HttpServletRequest request, HttpServletResponse response, String currentUserId)
 			throws IOException {
 		if (LOGGER.isLoggable(Level.FINE)) {
 			LOGGER.log(Level.FINE, "Handing HttpServletRequest "+request.getMethod());
@@ -61,49 +61,6 @@ public class ModifiedJsonRpcServer extends JsonRpcServer {
 
 
 		/** BEGIN MODIFICATION **/
-		HttpSession session;
-		String nonce;
-		if (request.isRequestedSessionIdValid()) {
-			// we should be all set.
-			session = request.getSession(false);
-			nonce = (String) session.getAttribute("nonce");
-		} else {
-			session = request.getSession(true); // Creates a new session.
-			session.setMaxInactiveInterval(Utils.sessionTimeout); // Set the timeout
-			
-			// Overriding default session cookie to use HttpOnly, and Secure if we're on https
-			response.setHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; HttpOnly; Path=/; max-age=" + Utils.sessionTimeout);
-			
-			// Generate a nonce and set it as a session attribute to be verified later.
-			nonce = Utils.generateNonce(8);
-			session.setAttribute("nonce", nonce);
-			
-			// Send the nonce to the client as a cookie. Must be JS-readable.
-			response.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
-			
-			// Send response.
-			this.writeAndFlushValue(
-					output, this.createErrorResponse(
-							"2.0", "null", -32600, "Creating session, please retry.", null));
-			return;
-		}
-		
-		String csrfHeader = request.getHeader("X-XSRF-Token");
-		if (!csrfHeader.equals(nonce)) {
-			this.writeAndFlushValue(
-					output, this.createErrorResponse(
-							"2.0", "null", -32600, "Invalid CSRF Token", null));
-			return;
-		}
-		
-		String currentUserId = (String) session.getAttribute("userId");
-		if (currentUserId == null) {
-			this.writeAndFlushValue(
-					output, this.createErrorResponse(
-							"2.0", "null", -32600, "User not authorized.", null));
-			return;
-		}
-
 		// service the request
 		handle(input, output, currentUserId);
 		/** END MODIFICATION **/
@@ -160,7 +117,8 @@ public class ModifiedJsonRpcServer extends JsonRpcServer {
 		JsonNode paramsNode = node.get("params");
 		ArrayNode paramsArrNode;
 		
-		if (paramsNode.isNull()) {
+		// modification to not crap out if there isn't a params object at all
+		if (paramsNode == null || paramsNode.isNull()) {
 			paramsArrNode = mapper.createArrayNode();
 		} else if (paramsNode.isArray()) {
 			paramsArrNode = (ArrayNode) paramsNode;
