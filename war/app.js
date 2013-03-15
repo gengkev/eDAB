@@ -7,6 +7,9 @@ angular.module('project', ['server'])
 			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
 	})
+	.service('app', function() { // to mantain app state, i guess
+				
+	})
 	.run(function($window) {
 		
 		/* google analytics snippet */
@@ -131,7 +134,6 @@ function CoursesCtrl($scope, $location, server) {
 
 function SettingsCtrl($scope, $location, server) {
 	$scope.nameChangeRequest = function() {
-		alert("Sorry, Jenny.");
 	};
 	$scope.schools = [
 		{"name": "Rachel Carson MS"}
