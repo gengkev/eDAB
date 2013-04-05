@@ -16,12 +16,12 @@ class User {
 	
 	enum Gender { MALE, FEMALE, OTHER }
 	
-	@Id String id; // same as fcps_id
+	@Id String id; // google userid
 	@Index public String name;
 	public String real_name;
-	@Load @Index Ref<Team> team;
+	Ref<Team> team;
 	@Load(LoadCourses.class) @Index List<Ref<Course>> courses;
-	@Index public String fcps_id;
+	@Index public String fcps_id; // fcpsschools.net user email
 	Gender gender;
 	
 	@JsonGetter
