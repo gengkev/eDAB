@@ -21,13 +21,13 @@ class User {
 		NEEDS_APPROVAL // user has tried to log in
 	}
 	
-	@Id String id; // same as fcps_id
+	@Id String id; // google userid
 	@Index public String name;
 	public String real_name;
 	// Ref<Team> team;
 	String team;
 	@Load(LoadCourses.class) @Index List<Ref<Course>> courses;
-	@Index public String fcps_id;
+	@Index public String fcps_id; // fcpsschools.net user email
 	Gender gender;
 	@Index AccountState accountState;
 	

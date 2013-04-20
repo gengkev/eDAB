@@ -82,7 +82,7 @@ public class LoginCallbackServlet extends HttpServlet {
     	}
         
         // log log log
-    	log.log(Level.INFO, "Logged in user " + userData.fcps_id);
+    	log.log(Level.INFO, "Logged in user id " + userData.id + " w/ username " + userData.fcps_id);
     	
     	// Get the user from the datastore
     	Ref<User> userRef = ofy().load().type(User.class).filter("fcps_id", userData.fcps_id).first();
@@ -95,7 +95,7 @@ public class LoginCallbackServlet extends HttpServlet {
     		user = new User();
     		user.name = userData.name;
     		user.real_name = userData.real_name;
-    		user.id = userData.fcps_id;
+    		user.id = userData.id;
     		user.fcps_id = userData.fcps_id;
     		user.gender = userData.gender;
     		
