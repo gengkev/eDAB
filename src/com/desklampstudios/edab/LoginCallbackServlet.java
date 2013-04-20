@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,13 +40,13 @@ public class LoginCallbackServlet extends HttpServlet {
     	String code = req.getParameter("code");
     	String stateParam = req.getParameter("state");
     	
-    	// get the state from the session, and promptly delete it
-    	String state = (String) session.getAttribute("nonce");
+    	// calculate the CSRF token
+    	String csrfToken = Utils.getCsrfTokenFromSessionId(session.getId());
     	
     	// make sure the query param matches the stored state (CSRF protection)
-    	if (state == null || !state.equals(stateParam)) {
+    	if (stateParam == null || !stateParam.equals(csrfToken)) {
     		resp.sendError(400, "Invalid state");
-    		log.log(Level.INFO, "Invalid state", state);
+    		log.log(Level.INFO, "Invalid state", stateParam);
     		return;
     	} else if (error != null) { // check if there's an error
     		resp.sendError(531, "Authentication attempt unsuccessful");
@@ -90,7 +91,7 @@ public class LoginCallbackServlet extends HttpServlet {
     	
     	// user does not exist in the datastore
     	if (user == null) {
-    		// add user?
+    		// add user, with needs approval
     		user = new User();
     		user.name = userData.name;
     		user.real_name = userData.real_name;
@@ -98,7 +99,21 @@ public class LoginCallbackServlet extends HttpServlet {
     		user.fcps_id = userData.fcps_id;
     		user.gender = userData.gender;
     		
+    		// for now we'll let it slide
+    		// user.accountState = User.AccountState.NEEDS_APPROVAL;
     		ofy().save().entity(user).now();
+    		
+    		// email meee
+    		try {
+				Utils.sendEmail(
+						"user-approval-notify@edab-ds.appspotmail.com",
+						"gengkev@gmail.com", 
+						"User approval notification: " + user.name,
+						"Name: " + userData.name + "\n" + "Student ID: " + userData.fcps_id
+				);
+			} catch (MessagingException e) {
+				log.log(Level.WARNING, "Error notifying of user approval", user);
+			}
     	}
 		
 		// store the id in the session

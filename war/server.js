@@ -67,6 +67,9 @@ angular.module('server', [])
 				});
 			}
 		};
+		$window._rpcRequest = function(method, params) {
+			return _this.rpc._request(method, params);
+		};
 	})
 	.run(function(server) {
 		server.auth.check();

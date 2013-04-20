@@ -27,8 +27,8 @@ public class LoginServlet extends HttpServlet {
 			session.setAttribute("closeWindow", true);
 		}
 		
-		// Get the nonce for this session.
-		String nonce = (String) session.getAttribute("nonce");
+		// Get the CSRF token - is reusing it a good idea? :/ shrug
+		String csrfToken = Utils.getCsrfTokenFromSessionId(session.getId());
 		
 		// For some reason, response.sendRedirect appends ;JSESSIONID=BLA
 		// which is obviously not accepted by Google. So instead, let's
@@ -36,6 +36,6 @@ public class LoginServlet extends HttpServlet {
 		resp.setStatus(302);
 		resp.setHeader("Location", GoogleOAuthClient.getEndpointURL(
 				GoogleOAuthClient.getRequestHost(req),
-				nonce));
+				csrfToken));
 	}
 }

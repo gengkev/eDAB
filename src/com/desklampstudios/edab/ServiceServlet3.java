@@ -1,7 +1,10 @@
 package com.desklampstudios.edab;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -10,12 +13,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.objectify.ObjectifyService;
+
 @SuppressWarnings("serial")
 public class ServiceServlet3 extends HttpServlet {
+	static {
+		ObjectifyService.register(User.class);
+		ObjectifyService.register(Course.class);
+		ObjectifyService.register(School.class);
+		ObjectifyService.register(Entry.class);
+	}
 	private static final Logger log = Logger.getLogger(ServiceServlet3.class.getName());
 	
+	enum ServiceError {
+		SESSION_INIT   ("The session state is being initialized. Please try again."),
+		INVALID_CSRF   ("The provided CSRF token was invalid."),
+		NOT_LOGGED_IN  ("The user is not logged in."),
+		NOT_AUTHORIZED ("The user does not have permission to access the item requested."),
+		INVALID_PARAMS ("The request contained invalid parameters.");
+		
+		private final String msg;
+		private ServiceError(String msg) {
+			this.msg = msg;
+		}
+		public String message() {
+			return this.msg;
+		}
+	}
+	
 	private ServiceService serviceService;
-	private ModifiedJsonRpcServer jsonRpcServer;
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -27,20 +54,18 @@ public class ServiceServlet3 extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session;
-		String nonce;
+		String csrfToken;
 		OutputStream output = response.getOutputStream();
 		if (request.isRequestedSessionIdValid()) {
 			// we should be all set.
 			session = request.getSession(false);
-			//nonce = (String) session.getAttribute("nonce");
-			nonce = Utils.getNonceFromSessionId(session.getId());
+			csrfToken = Utils.getCsrfTokenFromSessionId(session.getId());
 		} else {
 			// We need to initialize the session.
 			initializeSession(request, response);
 			
 			// Send response. We will not accept this request because we have not verified CSRF.
-			Utils.writeOutputStream(output, "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{" + 
-					"\"code\":-32600,\"message\":\"Initializing session, please retry.\"}}");
+			Utils.writeOutputStream(output, generateErrorResponse(ServiceError.SESSION_INIT));
 			output.close();
 			return;
 		}
@@ -48,23 +73,45 @@ public class ServiceServlet3 extends HttpServlet {
 		// Check if the header matches the nonce.
 		// Screw the cookie.
 		String csrfHeader = request.getHeader("X-XSRF-Token");
-		if (!csrfHeader.equals(nonce)) {
-			Utils.writeOutputStream(output, "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{" +
-					"\"code\":-32600,\"message\":\"Invalid CSRF token!\"}}");
+		if (csrfHeader == null || !csrfHeader.equals(csrfToken)) {
+			Utils.writeOutputStream(output, generateErrorResponse(ServiceError.INVALID_CSRF));
 			output.close();
 			return;
 		}
 		
 		String currentUserId = (String) session.getAttribute("userId");
 		if (currentUserId == null) {
-			Utils.writeOutputStream(output, "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{" + 
-					"\"code\":-32600,\"message\":\"User not authorized.\"}}");
+			Utils.writeOutputStream(output, generateErrorResponse(ServiceError.NOT_LOGGED_IN));
 			output.close();
 			return;
 		}
 		
-		// otherwise...handle it.
-	    jsonRpcServer.handle(request, response, currentUserId);
+		
+		// otherwise... handle the request
+		
+		String action = request.getParameter("action"); // ik it's like not hip anymore but too bad
+		String json = Utils.readInputStream(request.getInputStream()); // yay
+		ObjectMapper mapper = new ObjectMapper();
+		
+		if (action.equals("getUser")) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> jsonData = mapper.readValue(json, Map.class);
+			Object idObj = jsonData.get("userId");
+			if (!(idObj instanceof String) || idObj == null) {
+				Utils.writeOutputStream(output, generateErrorResponse(ServiceError.INVALID_PARAMS));
+				output.close();
+				return;
+			}
+			String id = (String) idObj;
+			
+			User user = ofy().load().group(User.LoadCourses.class).type(User.class).filter("fcps_id", id).first().get();
+			
+			
+		}
+	}
+	
+	protected String generateErrorResponse(ServiceError err) {
+		return "{\"error\":{\"code\":\"" + err.toString() + "\",\"message\":\"" + err.message() + "\"}}";
 	}
 	
 	protected void initializeSession(HttpServletRequest request, HttpServletResponse response) {
@@ -74,18 +121,8 @@ public class ServiceServlet3 extends HttpServlet {
 		// Overriding default session cookie to use HttpOnly, and Secure if we're on https
 		response.setHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; HttpOnly; Path=/; max-age=" + Utils.sessionTimeout);
 		
-		// Generate a nonce and set it as a session attribute to be verified later.
-		//String nonce = Utils.generateNonce(8);
-		String nonce = Utils.getNonceFromSessionId(session.getId());
-		session.setAttribute("nonce", nonce);
-		
-		// Send the nonce to the client as a cookie. Must be JS-readable.
+		// Generate a CSRF token and send it as a cookie - no HttpOnly as it must be js-readable.
+		String nonce = Utils.getCsrfTokenFromSessionId(session.getId());
 		response.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
-	}
-	
-	@Override
-	public void init(ServletConfig config) {
-	    this.serviceService = new ServiceService();
-	    this.jsonRpcServer = new ModifiedJsonRpcServer(this.serviceService, ServiceService.class);
 	}
 }

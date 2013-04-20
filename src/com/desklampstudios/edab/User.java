@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.desklampstudios.edab.School.Team;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -15,14 +16,20 @@ class User {
 	class LoadCourses { }
 	
 	enum Gender { MALE, FEMALE, OTHER }
+	enum AccountState {
+		IMPORTED,      // user needs to enter details
+		NEEDS_APPROVAL // user has tried to log in
+	}
 	
 	@Id String id; // same as fcps_id
 	@Index public String name;
 	public String real_name;
-	@Load @Index Ref<Team> team;
+	// Ref<Team> team;
+	String team;
 	@Load(LoadCourses.class) @Index List<Ref<Course>> courses;
 	@Index public String fcps_id;
 	Gender gender;
+	@Index AccountState accountState;
 	
 	@JsonGetter
 	public String gender() {
@@ -31,5 +38,9 @@ class User {
 		} else {
 			return null;
 		}
+	}
+	@JsonSetter
+	public void gender(String str) {
+		this.gender = Gender.valueOf(str.toUpperCase());
 	}
 }

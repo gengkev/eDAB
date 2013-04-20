@@ -136,6 +136,7 @@ function SettingsCtrl($scope, $location, server) {
 	$scope.schools = [
 		{"name": "Rachel Carson MS"}
 	];
+	$scope.user.school = $scope.schools[0];
 	$scope.teams = [
 		{"grade": 7, "letter": "A", "name": "Star Jumps"},
 		{"grade": 7, "letter": "B", "name": "Trail Mix"},

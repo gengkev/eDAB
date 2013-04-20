@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,19 +20,26 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
 	
 	// To be appended to JSON strings in responses as a deterrent to CSRF.
 	public static final String JsonPad = ")]}',\n";
 	
-	public static final int sessionTimeout = 60 * 60 * 24 * 7; // 7 days in seconds
+	static final int sessionTimeout = 60 * 60 * 24 * 7; // 7 days in seconds
 	
 	// Uploading this onto Github may not be the best idea.
 	// But it's not like anyone's gonna make rainbow tables for this or even cares about this project.
 	private static final String hashingSalt = "Tripping across the blurry line between friends and more than friends";
 	
-	public static final int nonceBytes = 6; // the session id is only 6 anyway =_=
+	static final int csrfTokenBytes = 6; // the session id is only 6 anyway =_=
 	
 	// Short constructor for fetchURL that don't need to send data.
 	public static String fetchURL(String method, String loadUrl) throws IOException {
@@ -142,7 +150,8 @@ public class Utils {
 	}
 	*/
 	
-	public static String getNonceFromSessionId(String sessionId) {
+	// Calculates the corresponding CSRF token for a session ID by hashing it.
+	static String getCsrfTokenFromSessionId(String sessionId) {
 		Mac mac = null;
 		try {
 			mac = Mac.getInstance("HmacSha256");
@@ -161,7 +170,19 @@ public class Utils {
 		}
 		byte[] shaDigest = mac.doFinal(sessionId.getBytes());
 		
-		// take the first (nonceBytes) bytes
-		return bytesToHexString(Arrays.copyOfRange(shaDigest, 0, nonceBytes));
+		// take the first (csrfToken) bytes
+		return bytesToHexString(Arrays.copyOfRange(shaDigest, 0, csrfTokenBytes));
+	}
+	
+	static void sendEmail(String from, String to, String subject, String body) throws MessagingException {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+		
+		Message msg = new MimeMessage(session);
+		msg.setFrom(new InternetAddress(from));
+		msg.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+		msg.setSubject(subject);
+		msg.setText(body);
+		Transport.send(msg);
 	}
 }
