@@ -6,12 +6,12 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Parent;
 
 @Entity
-class School {
+public class School {
 	@Id Long id;
 	@Index String name;
 	@Index String short_name;
 	String url;
-	
+
 	@Entity
 	static class Team {
 		@Parent School parent;

@@ -40,6 +40,9 @@ public class ServiceServlet3 extends HttpServlet {
 		public String message() {
 			return this.msg;
 		}
+		public String generateJsonResponse() {
+			return "{\"error\":{\"code\":\"" + this.toString() + "\",\"message\":\"" + this.message() + "\"}}";
+		}
 	}
 	
 	private ServiceService serviceService;
@@ -110,19 +113,5 @@ public class ServiceServlet3 extends HttpServlet {
 		}
 	}
 	
-	protected String generateErrorResponse(ServiceError err) {
-		return "{\"error\":{\"code\":\"" + err.toString() + "\",\"message\":\"" + err.message() + "\"}}";
-	}
 	
-	protected void initializeSession(HttpServletRequest request, HttpServletResponse response) {
-		HttpSession session = request.getSession(true); // Creates a new session.
-		session.setMaxInactiveInterval(Utils.sessionTimeout); // Set the timeout
-		
-		// Overriding default session cookie to use HttpOnly, and Secure if we're on https
-		response.setHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; HttpOnly; Path=/; max-age=" + Utils.sessionTimeout);
-		
-		// Generate a CSRF token and send it as a cookie - no HttpOnly as it must be js-readable.
-		String nonce = Utils.getCsrfTokenFromSessionId(session.getId());
-		response.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
-	}
 }

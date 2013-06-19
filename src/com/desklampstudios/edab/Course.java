@@ -10,7 +10,7 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Load;
 
 @Entity
-class Course {
+public class Course {
 	@Id Long id;
 	@Index String name;
 	String longName;
@@ -18,5 +18,5 @@ class Course {
 	String bb_id;
 	// String bb_long_id;
 	@Load @Index List<Ref<User>> instructors;
-	@Load @Index Ref<Semester> semester;
+	// @Load @Index Ref<Semester> semester;
 }

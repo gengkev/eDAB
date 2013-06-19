@@ -1,140 +1,140 @@
-angular.module('project', ['server'])
+"use strict";
+
+var app = angular.module('eDAB-app', ['eDAB-utils'])
 	.config(function($routeProvider) {
 		$routeProvider.
-			when('/agenda'  , {controller: AgendaCtrl  , templateUrl: 'html/agenda.html'  }).
-			when('/calendar', {controller: CalendarCtrl, templateUrl: 'html/calendar.html'}).
-			when('/courses' , {controller: CoursesCtrl , templateUrl: 'html/courses.html' }).
-			when('/settings', {controller: SettingsCtrl, templateUrl: 'html/settings.html'}).
+			when('/agenda'  , {controller: AgendaCtrl  , templateUrl: 'partials/agenda.html'  }).
+			when('/calendar', {controller: CalendarCtrl, templateUrl: 'partials/calendar.html'}).
+			when('/courses' , {controller: CoursesCtrl , templateUrl: 'partials/courses.html' }).
+			when('/settings', {controller: SettingsCtrl, templateUrl: 'partials/settings.html'}).
 			otherwise({redirectTo: '/agenda'});
-	})
-	.service('app', function() { // to mantain app state, i guess
-				
-	})
-	.run(function($window) {
-		
-		/* google analytics snippet */
-		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
-		(function(d, t) {
-			var g = d.createElement(t),
-			    s = d.getElementsByTagName(t)[0];
-			g.src = '//www.google-analytics.com/ga.js';
-			s.parentNode.insertBefore(g, s);
-		}($window.document, 'script'));
-		
-	}).directive("fadeInOut", function($timeout) {
-		return function(scope, element, attrs) {
-			var doShow = true, isShowing = true, 
-			    timeout = parseInt(attrs.timeout) || 2000,
-			    timeoutId;
-			
-			function show() {
-				if (timeoutId) $timeout.cancel(timeoutId);
-				
-				element[0].style.transition = (timeout / 1000) + "s ease";
-				element[0].style.display = "block";
-				
-				$timeout(function() {
-					element[0].style.opacity = "1";
-				}, 0);
-			}
-			function hide() {
-				if (timeoutId) $timeout.cancel(timeoutId);
-				
-				element[0].style.transition = (timeout / 1000) + "s ease";
-				element[0].style.opacity = "0";
-				
-				timeoutId = $timeout(function() {
-					timeoutId = null;
-					element[0].style.display = "none";
-				}, timeout);
-			}
-			
-			scope.$watch(attrs.fadeInOut, function(value) {
-				var newDoShow = !!value;
-				console.log("newDoShow", newDoShow);
-				if (newDoShow != doShow) {					
-					if (newDoShow) show();
-					else hide();
-					
-					doShow = newDoShow;
-				}
-			});
-		};
 	});
-	
 
-function AppCtrl($scope, $rootScope, $location, $window, server) {
-	$scope.$watch(function() { return server.auth.logged_in; }, function(logged_in) {
-		$scope.logged_in = logged_in;
-	});
-	$scope.$watch(function() { return server.user; }, function(user) {
-		$scope.user = user;
-	});
-	$scope.login = function() {
-		server.auth.login();
-	};
-	$scope.logout = function() {
-		server.auth.logout();
-	};
-	
-	$window.bla = function() {
-		return server.rpc._request("idk", []);
-	};
-	
-	$scope.errorMsg = null;
-	(function() {
-		var timeout = null;
-		$rootScope.showError = function(str, time) {
-			if (timeout) {
-				$window.clearTimeout(timeout);
-			}
-			$scope.errorMsg = str;
-			timeout = $window.setTimeout(function() {
-				$scope.errorMsg = null;
-			}, time || 10000);
-		};
-	}());
+app.service('appService', function($window, $http, $rootScope, $location) {    
+    var self = this;
+    self.auth = {
+        logged_in: null,
+        
+        login: function() {
+            // $window.location.replace("/login");
+            $window.open("/login?close", "login");
+            
+            $window.loginCallback = function() {
+                self.auth.check();
+            };
+        },
+        
+        logout: function() {
+            $http({
+                method: "POST",
+                url: "/logout"
+            })
+            .then(function(resp) {
+                self.auth.check();
+            });
+        },
+        
+        check: function() {
+        }
+    };
+});
+
+app.run(function(appService) {
+    appService.auth.check();
+});
+
+
+        /*
+        check: function () {
+            //_this.auth.logged_in = false;
+            _this.rpc._request("getCurrentUser", null)
+                .then(function(resp) {
+                    if (resp.data && resp.data.result && !resp.data.error) {
+                        console.log(resp);
+                        _this.auth.logged_in = true;
+                        _this.user.name = resp.data.result.name;
+                        _this.user.fcps_id = resp.data.result.fcps_id;
+                        
+                        $location.path("/settings");
+                    } else {
+                        console.error(resp);
+                        _this.auth.logged_in = false;
+                        try {
+                            $rootScope.showError(JSON.stringify(resp.data.error));
+                        } catch(e) {}
+                    }
+                });
+        }
+    };
+    _this.user = {
+        name: null,
+        fcps_id: null
+    };
+    _this.rpc = {
+        _counter: 0,
+        _request: function(method, params) {
+            return $http({
+                method: "POST",
+                url: RPC_URL,
+                data: {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "params": params,
+                    "id": _this.rpc._counter++
+                }
+            });
+        }
+    };
+    $window._rpcRequest = function(method, params) {
+        return _this.rpc._request(method, params);
+    };
+})
+.run(function(server) {
+    server.auth.check();
+});
+*/
+
+
+function AppCtrl($scope, appService, $exceptionHandler) {
+    $scope.auth = appService.auth;
 	
 	$scope.infoboxState = function() {
-		if ($scope.logged_in === false) {
+		if (appService.auth.logged_in === false) {
 			return "login";
-		} else if ($scope.logged_in === null) {
+		} else if (appService.auth.logged_in === null) {
 			return "loading";
 		}
 		return false;
 	};
+    
+    $scope.getErrorMsg = function() {
+        return $exceptionHandler.errorMsg;
+    };
 }
 
-function NavCtrl($scope, $location, server) {
-	$scope.$watch(function() { return $location.path(); }, function(path) {
-		$scope.currentPage = path;
-	});
+function NavCtrl($scope, $location) {
+    $scope.onPage = function(path) {
+		return $location.path == path;
+	};
+    
 	$scope.pages = [
 		{name: 'Agenda'  , path: '/agenda'  },
 		{name: 'Calendar', path: '/calendar'},
 		{name: 'Courses' , path: '/courses' },
 		{name: 'Settings', path: '/settings'}
 	];
-	$scope.onPage = function(path) {
-		return $scope.currentPage == path;
-	};
 }
 
-function LandingCtrl($scope, $location, server) {
+function AgendaCtrl($scope, $location, appService) {
 }
 
-function AgendaCtrl($scope, $location, server) {
+function CalendarCtrl($scope, $location, appService) {
 }
 
-function CalendarCtrl($scope, $location, server) {
+function CoursesCtrl($scope, $location, appService) {
 }
 
-function CoursesCtrl($scope, $location, server) {
-}
-
-function SettingsCtrl($scope, $location, server) {
-	$scope.nameChangeRequest = function() {
-	};
+function SettingsCtrl($scope, $location, appService) {
 	$scope.schools = [
 		{"name": "Rachel Carson MS"}
 	];

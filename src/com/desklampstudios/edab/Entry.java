@@ -19,7 +19,7 @@ public class Entry {
 	@Index Date created;
 	List<Revision> revisions;
 	List<Comment> comments;
-	
+
 	@Embed
 	static class Revision {
 		Text content;

@@ -11,9 +11,9 @@ import javax.servlet.http.HttpSession;
 @SuppressWarnings("serial")
 public class LoginServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(LoginServlet.class.getName());
-	
+
 	@Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpSession session;
 		if (req.isRequestedSessionIdValid()) {
 			session = req.getSession(false); // we should not be creating a new session!
@@ -21,15 +21,15 @@ public class LoginServlet extends HttpServlet {
 			resp.sendError(500, "Session invalid");
 			return;
 		}
-		
+
 		// If we get passed close, save closeWindow to close the login window when we're done.
 		if (req.getParameter("close") != null) {
 			session.setAttribute("closeWindow", true);
 		}
-		
+
 		// Get the CSRF token - is reusing it a good idea? :/ shrug
 		String csrfToken = Utils.getCsrfTokenFromSessionId(session.getId());
-		
+
 		// For some reason, response.sendRedirect appends ;JSESSIONID=BLA
 		// which is obviously not accepted by Google. So instead, let's
 		// send our own 302 and Location header!

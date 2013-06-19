@@ -82,7 +82,7 @@ nav a.brand:hover {
 	padding: 8px 8px 8px 48.5px;
     background-color: hsl(3, 99%, 65%);
 
-	background-image: url(fcps.png);
+	background-image: url("img/fcps.png");
 	background-repeat: no-repeat;
 	
 	background-position: 6px center;

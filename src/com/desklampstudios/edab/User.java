@@ -2,45 +2,29 @@ package com.desklampstudios.edab;
 
 import java.util.List;
 
-import com.desklampstudios.edab.School.Team;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Load;
+import com.googlecode.objectify.condition.IfNotNull;
 
 @Entity
-class User {
-	class LoadCourses { }
-	
+public class User {
+	public class Courses { }
+
 	enum Gender { MALE, FEMALE, OTHER }
 	enum AccountState {
-		IMPORTED,      // user needs to enter details
-		NEEDS_APPROVAL // user has tried to log in
+		IMPORTED,      // user imported, has not logged in
+		NEEDS_APPROVAL // user has tried to log in but not approved
 	}
-	
-	@Id String id; // google userid
-	@Index public String name;
-	public String real_name;
-	// Ref<Team> team;
-	String team;
-	@Load(LoadCourses.class) @Index List<Ref<Course>> courses;
-	@Index public String fcps_id; // fcpsschools.net user email
-	Gender gender;
-	@Index AccountState accountState;
-	
-	@JsonGetter
-	public String gender() {
-		if (this.gender != null) {
-			return this.gender.toString();
-		} else {
-			return null;
-		}
-	}
-	@JsonSetter
-	public void gender(String str) {
-		this.gender = Gender.valueOf(str.toUpperCase());
-	}
+
+
+	public @Id                  String id; // google userid
+	public @Index               String name;
+	public                      String real_name;
+	@Index @Load(Courses.class) List<Ref<Course>> courses;
+	public @Index               String fcps_id; // fcpsschools.net user email
+	public                      Gender gender;
+	@Index(IfNotNull.class)     AccountState accountState;
 }

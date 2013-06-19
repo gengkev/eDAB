@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="project" itemscope itemtype="http://schema.org/WebApplication" prefix="og: http://ogp.me/ns#">
+<html lang="en" ng-app="eDAB-app" itemscope itemtype="http://schema.org/WebApplication">
 <head>
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1"/>
-	<meta itemprop="name" property="og:title" content="eDAB"/>
-	<title>eDAB | Desklamp Studios</title>
-	<link rel="prerender" href="/service"/>
-	<link rel="stylesheet" href="ext/bootstrap.min.css"/>
-	<link rel="stylesheet" href="ext/bootstrap-responsive.min.css"/>
-	<link rel="stylesheet" href="ext/font-awesome.min.css"/>
+	<title>eDAB</title>
+    <style type="text/css">
+        [ng-cloak] {
+            display: none;
+        }
+    </style>
+	<link rel="stylesheet" href="lib/bootstrap/bootstrap.css"/>
+	<link rel="stylesheet" href="lib/bootstrap/bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css"/>
 	<link rel="stylesheet" href="main.css"/>
 </head>
 <body ng-controller="AppCtrl">
 	<div class="container">
-	
+        
 		<div id="navbar">
 			<nav>
 				<a class="brand">eDAB</a>
@@ -25,22 +28,22 @@
 				</ul>
 			</nav>
 		</div>
-		
-		<div class="alert alert-error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
+        <display-error></display-error>
 		
 		<div class="page_content" ng-view></div>
 	</div>
 	
+    <!-- Infobox -->
 	<div id="infobox-container" fade-in-out="infoboxState()" timeout="1500">
 		<div id="infobox">
-			<div class="alert alert-error" ng-cloak ng-show="errorMsg" ng-bind="errorMsg"></div>
-			<section id="infobox-login" ng-cloak ng-show="infoboxState() == 'login'">
+			<display-error></display-error>
+			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
 				<h3>eDAB brings your assignment book online.</h3>
 				<p>
 					eDAB can help you organize your schedule bla bla bla.
 				</p>
 				<p>
-					<button class="btn-signin" ng-click="login()">
+					<button class="btn-signin" ng-click="auth.login()">
 						<!--img src="fcps.png" width="37.5" height="32" alt="FCPS"/-->
 						Sign in with your fcpsschools.net account
 					</button>
@@ -63,12 +66,14 @@
 			</section>
 		</div>
 	</div>
+    
 	
-	<script src="ext/angular.min.js"></script>
+	<script src="lib/angular/angular.js"></script>
+    <script src="lib/angular/angular-bootstrap.js"></script>
+    <script src="lib/angular/angular-resource.js"></script>
 	<script src="app.js"></script>
-	<script src="server.js"></script>
+    <script src="utils.js"></script>
 	<!-- woo g+ snippet dont feel like putting async loading code so heres a nice attribute -->
-	<script src="https://apis.google.com/js/plusone.js" async></script>
-</script>
+	<script src="https://apis.google.com/js/plusone.js" async="async"></script>
 </body>
 </html>
