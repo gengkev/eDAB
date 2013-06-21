@@ -59,12 +59,10 @@ public class Utils {
 		"I don't know what to say about these strings. *shakes head* silly me."
 	};
 	
-	// SHA256 produces 256 bits of entropy.
-	// The session ID is 12-13 base-36 chars, or about *64 bits*.
-	// There's no point in making ours any longer than that, so
-	// We'll make our CSRF token 64 bits as well (8 bytes).
-	// That's 10-11 base-64 chars, plus the =.
-	static final int csrfTokenBytes = 8;
+	// SHA256 produces 256 bits of entropy, or 42-43 base64 chars.
+	// On deployment the session ID is 22 base64 chars, or about *132 bits*.
+	// So we'll round up to 18 bytes = *144 bits* = 24 base64 chars.
+	static final int csrfTokenBytes = 18;
 	
 	// Short constructor for fetchURL that don't need to send data.
 	public static String fetchURL(String method, String loadUrl) throws IOException {
@@ -201,7 +199,7 @@ public class Utils {
 		byte[] shaDigest = mac.doFinal(sessionId.getBytes());
 		
 		// take only the first 128 bits = 16 bytes (half the size of SHA256 output)
-		return DatatypeConverter.printHexBinary(
+		return DatatypeConverter.printBase64Binary(
 				Arrays.copyOfRange(shaDigest, 0, csrfTokenBytes));
 	}
 	
