@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Consumes("application/json")
 @Produces("application/json")
 public class AccountResource {	
-	
+
 	@GET @Path("/currentUser")
 	public Response getLoginState(@Context HttpServletRequest req, @Context HttpServletResponse resp) {
 		String currentUserId = null;
@@ -33,17 +33,17 @@ public class AccountResource {
 			// send to client
 			throw e;
 		}
-		
+
 		// now we must actually get the user info
-		
+
 		User user = ofy().load().type(User.class).id(currentUserId).get();
-		
-		if (user.accountState == User.AccountState.NEEDS_APPROVAL) {
+
+		if (user.accountState != null && user.accountState == User.AccountState.NEEDS_APPROVAL) {
 			throw new eDABException.NeedsApprovalException("");
 		}
-		
+
 		// serialize into JSON
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		String json = null;
 		try {

@@ -77,7 +77,7 @@ public class AccountService {
 		if (session != null) {
 			session.invalidate();
 		}
-		
+
 		session = req.getSession(true); // creates new session
 		session.setMaxInactiveInterval(Utils.sessionTimeout); // Set the server session timeout
 
@@ -87,7 +87,7 @@ public class AccountService {
 		// Generate a CSRF token and send it as a cookie - no HttpOnly as it must be js-readable.
 		String nonce = Utils.getCsrfTokenFromSessionId(session.getId());
 		resp.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
-		
+
 		return session;
 	}
 }

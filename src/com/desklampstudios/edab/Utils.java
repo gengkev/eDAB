@@ -30,13 +30,13 @@ import javax.xml.bind.DatatypeConverter;
 
 public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
-	
+
 	// To be appended to JSON strings in responses as a deterrent to CSRF.
 	public static final String JsonPad = ")]}',\n";
-	
+
 	// System property, set in appengine-web.xml
 	static final int sessionTimeout = Integer.parseInt(System.getProperty("edab.session-timeout"));
-	
+
 	// Uploading this onto Github may not be the best idea, but whateverr
 	// Let's add more than one to make things interesting
 	// Though just SecureRandom-ing and storing a token would probs be better
@@ -58,12 +58,12 @@ public class Utils {
 		"I have died everyday waiting for you. Darling don't be afraid, I have loved you",
 		"I don't know what to say about these strings. *shakes head* silly me."
 	};
-	
+
 	// SHA256 produces 256 bits of entropy, or 42-43 base64 chars.
 	// On deployment the session ID is 22 base64 chars, or about *132 bits*.
 	// So we'll round up to 18 bytes = *144 bits* = 24 base64 chars.
 	static final int csrfTokenBytes = 18;
-	
+
 	// Short constructor for fetchURL that don't need to send data.
 	public static String fetchURL(String method, String loadUrl) throws IOException {
 		return fetchURL(method, loadUrl, null, null);
@@ -71,76 +71,76 @@ public class Utils {
 	// A function to easily get data from URLs.
 	public static String fetchURL(String method, String loadUrl, String data, String contentType) throws IOException {
 		// Open the connection.
-    	HttpURLConnection connection = null;
-    	try {
-	        URL url = new URL(loadUrl);
-	        connection = (HttpURLConnection) url.openConnection();
-	        connection.setRequestMethod(method);
-	        if (contentType != null) {
-	        	connection.setRequestProperty("Content-Type", contentType);
-	        }
-    	} catch (IOException e) {
-    		throw e;
-    	}
-        
-    	// If we are given data, write it.
-    	if (data != null) {
-    		connection.setDoOutput(true);
-    		writeOutputStream(connection.getOutputStream(), data);
-    	}
-        
-        // Get the input back.
-        String input = readInputStream(connection.getInputStream());
-        
-        // Disconnect - probably isn't needed.
-        connection.disconnect();
-        
-        return input;
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(loadUrl);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod(method);
+			if (contentType != null) {
+				connection.setRequestProperty("Content-Type", contentType);
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+
+		// If we are given data, write it.
+		if (data != null) {
+			connection.setDoOutput(true);
+			writeOutputStream(connection.getOutputStream(), data);
+		}
+
+		// Get the input back.
+		String input = readInputStream(connection.getInputStream());
+
+		// Disconnect - probably isn't needed.
+		connection.disconnect();
+
+		return input;
 	}
-	
+
 	// Helper function that writes a String to an OutputStream.
 	public static void writeOutputStream(OutputStream outputStream, String output) throws IOException {
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(outputStream);
-            writer.write(output);
-        } catch (IOException e) {
-        	throw e;
-        } finally {
-        	if (writer != null) {
-        		writer.close();
-        	}
-        }
+		OutputStreamWriter writer = null;
+		try {
+			writer = new OutputStreamWriter(outputStream);
+			writer.write(output);
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
 	}
-	
+
 	// Helper function that reads a String from an InputStream.
 	public static String readInputStream(InputStream inputStream) throws IOException {
-        BufferedReader reader = null;
-        StringBuilder inputBuilder = new StringBuilder();
-        String line;
-        try {
-	        reader = new BufferedReader(new InputStreamReader(inputStream));
-	        
-	        // As long as there are still more lines, keep appending them.
-	        while ((line = reader.readLine()) != null) {
-	        	inputBuilder.append(line);
-	        	inputBuilder.append("\n");
-	        }
-        } catch (IOException e) {
-        	throw e;
-        } finally {
-        	if (reader != null) {
-        		reader.close();
-        	}
-        }
-        return inputBuilder.toString();
+		BufferedReader reader = null;
+		StringBuilder inputBuilder = new StringBuilder();
+		String line;
+		try {
+			reader = new BufferedReader(new InputStreamReader(inputStream));
+
+			// As long as there are still more lines, keep appending them.
+			while ((line = reader.readLine()) != null) {
+				inputBuilder.append(line);
+				inputBuilder.append("\n");
+			}
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		return inputBuilder.toString();
 	}
-	
+
 	// Helper function that's close to encodeURIComponent in JS.
 	// See http://stackoverflow.com/q/607176/689161
 	public static String encodeURIComponent(String input) {
 		String result = null;
-		
+
 		try {
 			result = URLEncoder.encode(input, "UTF-8").replaceAll("\\+", "%20");
 		} catch (UnsupportedEncodingException e) {
@@ -148,10 +148,10 @@ public class Utils {
 			log.log(Level.WARNING, "Something went wrong", e);
 			return null;
 		}
-		
+
 		return result;
 	}
-	
+
 	// http://stackoverflow.com/q/9655181/
 	public static String bytesToHexString(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();
@@ -160,7 +160,7 @@ public class Utils {
 		}
 		return sb.toString();
 	}
-	
+
 	// helper function to generate a random nonce. Gets 8 bytes of random bits 
 	// from SecureRandom, and converts it into hexadecimal to put into a StringBuilder.
 	/*
@@ -168,11 +168,11 @@ public class Utils {
 		SecureRandom rand = new SecureRandom();
 		byte[] bytes = new byte[byteCount];
 		rand.nextBytes(bytes);
-		
+
 		return bytesToHexString(bytes);
 	}
-	*/
-	
+	 */
+
 	// Calculates the corresponding CSRF token for a session ID by hashing it.
 	static String getCsrfTokenFromSessionId(String sessionId) {
 		Mac mac = null;
@@ -182,12 +182,12 @@ public class Utils {
 			// should never happen irdc
 			throw new RuntimeException(e);
 		}
-		
+
 		// do some weird stuff and select a hashing salt to use
 		int hashIndex0 = Integer.parseInt(sessionId.charAt(0) + "", 36) % sessionId.length();
 		int hashIndex1 = Integer.parseInt(sessionId.charAt(hashIndex0) + "", 36) % hashingSalts.length;
 		String hashSalt = hashingSalts[hashIndex1];
-		
+
 		SecretKeySpec secret = new SecretKeySpec(hashSalt.getBytes(), "HmacSha256");
 		try {
 			mac.init(secret);
@@ -195,18 +195,18 @@ public class Utils {
 			// should never happen irdc
 			throw new RuntimeException(e);
 		}
-		
+
 		byte[] shaDigest = mac.doFinal(sessionId.getBytes());
-		
+
 		// take only the first 128 bits = 16 bytes (half the size of SHA256 output)
 		return DatatypeConverter.printBase64Binary(
 				Arrays.copyOfRange(shaDigest, 0, csrfTokenBytes));
 	}
-	
+
 	static void sendEmail(String from, String to, String subject, String body) throws MessagingException {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
-		
+
 		Message msg = new MimeMessage(session);
 		msg.setFrom(new InternetAddress(from));
 		msg.addRecipient(Message.RecipientType.TO, new InternetAddress(to));

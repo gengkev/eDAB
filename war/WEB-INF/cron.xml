@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-    <!-- Schedule session cleanup regularly  -->
+	<!-- Schedule session cleanup regularly -->
 	<cron>
 		<url>/_ah/sessioncleanup?clear</url>
 		<description>Clean up sessions</description>

@@ -87,16 +87,20 @@ public class LoginCallbackServlet extends HttpServlet {
 		// user does not exist in the datastore
 		if (user == null) {
 			// try to query for fcps ID
+			/*
 			user = ofy().load().type(User.class).filter("fcps_id", userData.fcps_id).first().get();
-			
-			
+			 */
+
 			// Still null?
 			if (user == null) {
 				// add user to datastore, with Needs Approval
 				user = userData;
-				user.accountState = User.AccountState.NEEDS_APPROVAL;
+
+				// nope not now
+				// user.accountState = User.AccountState.NEEDS_APPROVAL;
+
 				ofy().save().entity(user).now();
-				
+
 				// email meee
 				try {
 					Utils.sendEmail(
@@ -110,18 +114,18 @@ public class LoginCallbackServlet extends HttpServlet {
 				}
 			}	
 		}
-		
+
 		// Screw with imported accounts later.
-		
+
 		// Get closeWindow attribute before session is destroyed
 		Object closeWindow = session.getAttribute("closeWindow");
-		
+
 		// Reset session ID on login - to prevent certain attacks (session fixation?)
 		session = AccountService.initializeSession(req, resp);
-		
+
 		// store the access token from quite a bit back for revoking
 		session.setAttribute("access_token", access_token);
-		
+
 		// store the id in the session
 		session.setAttribute("userId", userData.id);
 
