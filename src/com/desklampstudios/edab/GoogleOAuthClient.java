@@ -20,7 +20,7 @@ public class GoogleOAuthClient {
 
 	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
 	private static final String CLIENT_SECRET = "dj908LVbvrMsHJb0KFZxL1tB";
-	private static final String SCOPES = "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email";
+	private static final String SCOPES = "openid%20profile%20email";
 
 	/*
 	protected static String getRedirectURL() {
@@ -70,6 +70,8 @@ public class GoogleOAuthClient {
 		} catch (IOException e) {
 			throw e;
 		}
+		
+		log.log(Level.FINER, "Google OAuth2 Token endpoint returned:\n" + output);
 
 		// Parse the JSON.
 		String access_token = null;
@@ -96,10 +98,12 @@ public class GoogleOAuthClient {
 		String output = null;
 
 		try {
-			output = Utils.fetchURL("GET", "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + access_token);
+			output = Utils.fetchURL("GET", "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + access_token);
 		} catch (IOException e) {
 			throw e;
 		}
+		
+		log.log(Level.FINER, "Google UserInfo endpoint returned:\n" + output);
 
 		// Parse the JSON.
 		User user = new User();
@@ -107,10 +111,10 @@ public class GoogleOAuthClient {
 			ObjectMapper m = new ObjectMapper();
 			JsonNode rootNode = m.readTree(output);
 			
-			String id = rootNode.path("id").textValue();
+			String id = rootNode.path("sub").textValue();
 			String name = rootNode.path("name").textValue();
 			String email = rootNode.path("email").textValue();
-			boolean verifiedEmail = rootNode.get("verified_email").booleanValue();
+			boolean verifiedEmail = rootNode.get("email_verified").booleanValue();
 			String gender = rootNode.path("gender").textValue();
 
 			if (name == null || email == null) {

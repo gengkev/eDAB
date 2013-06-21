@@ -26,6 +26,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.xml.bind.DatatypeConverter;
 
 public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
@@ -33,13 +34,37 @@ public class Utils {
 	// To be appended to JSON strings in responses as a deterrent to CSRF.
 	public static final String JsonPad = ")]}',\n";
 	
-	static final int sessionTimeout = 60 * 60 * 24 * 7; // 7 days in seconds
+	// System property, set in appengine-web.xml
+	static final int sessionTimeout = Integer.parseInt(System.getProperty("edab.session-timeout"));
 	
-	// Uploading this onto Github may not be the best idea.
-	// But it's not like anyone's gonna make rainbow tables for this or even cares about this project.
-	private static final String hashingSalt = "Tripping across the blurry line between friends and more than friends";
+	// Uploading this onto Github may not be the best idea, but whateverr
+	// Let's add more than one to make things interesting
+	// Though just SecureRandom-ing and storing a token would probs be better
+	private static final String[] hashingSalts = {
+		"Tripping across the blurry line between friends and more than friends",
+		"Chris Peterson and Bennet Rill, rest in peace. We will miss you.",
+		"He doesn't do math. Except for when he does math, of course.",
+		"C is for Brandon! But, additionally, B is for Jnanadeep. :)",
+		"I don't speak English. No hablo español. Je ne parle pas français.",
+		"If I only die once, I wanna die with you...and get hit by a truck...",
+		"We are God of stories, but please tell me, what there is to complain about?",
+		"Been here all along, so why can't you see? You belong with me...",
+		"Tryna' make it work, but man these times are hard... so we're gonna start by",
+		"print \"Hello, World!\" #  You can't even fit a Java hello world in here",
+		"The above example is incorrect, because it doesn't have enough jQuery.",
+		"Why do programmers get Halloween and December mixed up? Cuz 031 == 25",
+		"We were flying so high, yeah partners in crime, so why'd we ever say goodbye?",
+		"Your sweet moonbeams, the smell of you in every single dream I dream...",
+		"I have died everyday waiting for you. Darling don't be afraid, I have loved you",
+		"I don't know what to say about these strings. *shakes head* silly me."
+	};
 	
-	static final int csrfTokenBytes = 6; // the session id is only 6 anyway =_=
+	// SHA256 produces 256 bits of entropy.
+	// The session ID is 12-13 base-36 chars, or about *64 bits*.
+	// There's no point in making ours any longer than that, so
+	// We'll make our CSRF token 64 bits as well (8 bytes).
+	// That's 10-11 base-64 chars, plus the =.
+	static final int csrfTokenBytes = 8;
 	
 	// Short constructor for fetchURL that don't need to send data.
 	public static String fetchURL(String method, String loadUrl) throws IOException {
@@ -156,22 +181,28 @@ public class Utils {
 		try {
 			mac = Mac.getInstance("HmacSha256");
 		} catch (NoSuchAlgorithmException e) {
-			// this should never happen.
-			log.log(Level.WARNING, "Something went wrong", e);
-			return null;
+			// should never happen irdc
+			throw new RuntimeException(e);
 		}
-		SecretKeySpec secret = new SecretKeySpec(Utils.hashingSalt.getBytes(), "HmacSha256");
+		
+		// do some weird stuff and select a hashing salt to use
+		int hashIndex0 = Integer.parseInt(sessionId.charAt(0) + "", 36) % sessionId.length();
+		int hashIndex1 = Integer.parseInt(sessionId.charAt(hashIndex0) + "", 36) % hashingSalts.length;
+		String hashSalt = hashingSalts[hashIndex1];
+		
+		SecretKeySpec secret = new SecretKeySpec(hashSalt.getBytes(), "HmacSha256");
 		try {
 			mac.init(secret);
 		} catch (InvalidKeyException e) {
-			// this should never happen.
-			log.log(Level.WARNING, "Something went wrong", e);
-			return null;
+			// should never happen irdc
+			throw new RuntimeException(e);
 		}
+		
 		byte[] shaDigest = mac.doFinal(sessionId.getBytes());
 		
-		// take the first (csrfToken) bytes
-		return bytesToHexString(Arrays.copyOfRange(shaDigest, 0, csrfTokenBytes));
+		// take only the first 128 bits = 16 bytes (half the size of SHA256 output)
+		return DatatypeConverter.printHexBinary(
+				Arrays.copyOfRange(shaDigest, 0, csrfTokenBytes));
 	}
 	
 	static void sendEmail(String from, String to, String subject, String body) throws MessagingException {

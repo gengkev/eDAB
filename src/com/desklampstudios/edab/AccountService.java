@@ -25,14 +25,14 @@ public class AccountService {
 	 * @return currentUserID The ID of the current user making the request.
 	 * @throws eDABException
 	 */
-	public static String checkLogin(HttpServletRequest req, HttpServletResponse resp) 
+	static String checkLogin(HttpServletRequest req, HttpServletResponse resp) 
 			throws InvalidSessionException, NotLoggedInException {
 
 		// Do we have a valid session ID?
 		if (!req.isRequestedSessionIdValid()) {
 			// Initialize a new session and send an error response.
 			AccountService.initializeSession(req, resp);
-			throw new eDABException.InvalidSessionException();
+			throw new eDABException.InvalidSessionException("Invalid Session ID cookie");
 		}
 
 		HttpSession session = req.getSession(false);
@@ -42,22 +42,21 @@ public class AccountService {
 		String providedCSRF = req.getHeader("X-XSRF-Token");
 		if (!checkCSRFToken(session.getId(), providedCSRF)) {
 			// Invalidate the session, initialize a new session, and send an error response.
-			session.invalidate();
 			AccountService.initializeSession(req, resp);
-			throw new eDABException.InvalidSessionException();
+			throw new eDABException.InvalidSessionException("Invalid CSRF token in header");
 		}
 
 		String currentUserId = (String) session.getAttribute("userId");
 
 		if (currentUserId == null) {
 			// Send an error response.
-			throw new eDABException.NotLoggedInException();
+			throw new eDABException.NotLoggedInException("");
 		}
 
 		return currentUserId;
 	}
 
-	private static boolean checkCSRFToken(String sessionId, String providedToken) {
+	static boolean checkCSRFToken(String sessionId, String providedToken) {
 		if (providedToken == null || providedToken.isEmpty()) {
 			return false;
 		}
@@ -67,14 +66,20 @@ public class AccountService {
 
 	/**
 	 * Attempts to initialize a new session and related CSRF token.
+	 * If a session already exists, invalidate it first.
 	 * 
 	 * @param req
 	 * @param resp
 	 */
 
-	private static void initializeSession(HttpServletRequest req, HttpServletResponse resp) {
-		HttpSession session = req.getSession(true); // Creates a new session.
-		session.setMaxInactiveInterval(Utils.sessionTimeout); // Set the timeout
+	static HttpSession initializeSession(HttpServletRequest req, HttpServletResponse resp) {		
+		HttpSession session = req.getSession(false); // attempts to get session
+		if (session != null) {
+			session.invalidate();
+		}
+		
+		session = req.getSession(true); // creates new session
+		session.setMaxInactiveInterval(Utils.sessionTimeout); // Set the server session timeout
 
 		// Overriding default session cookie to use HttpOnly, and Secure if we're on https
 		resp.setHeader("Set-Cookie", "JSESSIONID=" + session.getId() + "; HttpOnly; Path=/; max-age=" + Utils.sessionTimeout);
@@ -82,5 +87,7 @@ public class AccountService {
 		// Generate a CSRF token and send it as a cookie - no HttpOnly as it must be js-readable.
 		String nonce = Utils.getCsrfTokenFromSessionId(session.getId());
 		resp.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
+		
+		return session;
 	}
 }

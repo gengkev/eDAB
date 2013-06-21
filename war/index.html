@@ -35,7 +35,7 @@
 	
     <!-- Infobox -->
 	<div id="infobox-container" fade-in-out="infoboxState()" timeout="1500">
-		<div id="infobox">
+		<div id="infobox" ng-show="infoboxState()">
 			<display-error></display-error>
 			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
 				<h3>eDAB brings your assignment book online.</h3>
@@ -43,7 +43,7 @@
 					eDAB can help you organize your schedule bla bla bla.
 				</p>
 				<p>
-					<button class="btn-signin" ng-click="auth.login()">
+					<button class="btn-signin" ng-click="service.auth.login()">
 						<!--img src="fcps.png" width="37.5" height="32" alt="FCPS"/-->
 						Sign in with your fcpsschools.net account
 					</button>
@@ -67,7 +67,7 @@
 		</div>
 	</div>
     
-	
+	<!-- will implement async script loading eventually -->
 	<script src="lib/angular/angular.js"></script>
     <script src="lib/angular/angular-bootstrap.js"></script>
     <script src="lib/angular/angular-resource.js"></script>

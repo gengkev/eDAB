@@ -43,7 +43,7 @@
 		<div class="control-group">
 			<label class="control-label">School</label>
 			<div class="controls">
-				<select disabled ng-model="user.school" ng-options="s.name for s in schools">
+				<select disabled="disabled" ng-model="user.school" ng-options="s.name for s in schools">
 					<option value=""></option>
 				</select>
 			</div>
@@ -67,13 +67,13 @@
 		
 		<div class="control-group">
 			<div class="controls">
-				<button class="btn btn-primary">Save</button>
-				<button class="btn">Discard</button>
+				<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged()">Save</button>
+				<button class="btn" ng-click="reset()" ng-disabled="isUnchanged()">Reset</button>
 			</div>
 		</div>
 	</form>
 	<p>
-		<button class="btn btn-danger" ng-click="logout()">Sign out and revoke tokens</button>
+		<button class="btn btn-danger" ng-click="service.auth.logout()">Sign out and revoke tokens</button>
 	</p>
 </fieldset>
 <fieldset itemscope itemprop="author">
@@ -81,8 +81,7 @@
 	<p>
 		eDAB is a product of <a href="http://gengkev.github.com/desklampstudios" itemprop="url">Desklamp Studios</a>.
 	</p>
-	<p>
-		<div class="g-plus" data-href="https://plus.google.com/113383006901215901732" data-height="131" data-width="350"></div>
-	</p>
+	
+	<div class="g-plus" data-href="https://plus.google.com/113383006901215901732" data-height="131" data-width="350"></div>
 </fieldset>
 

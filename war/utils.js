@@ -42,28 +42,17 @@ angular.module("eDAB-utils", [])
 			});
 		};
 	})
-    // override $exceptionHandler
-    .factory("$exceptionHandler", function() {     
-		/*
-		var promise = null;
-        
-		var func = function(exception, cause) {
-            console.error(exception, cause);
-			if (promise) {
-				$timeout.cancel(promise);
-			}
-			func.errorMsg = exception.message;
-			promise = $timeout(function() {
-				func.errorMsg = null;
-			}, 10000);
-		};
-        func.errorMsg = null;
-        return func;
-		*/
-		return {
-			errorMsg: null
-		};
-    })
+	.config(function($provide, $httpProvider) {
+		// display angularjs exceptions
+		$provide.decorator("$exceptionHandler", function($delegate) {
+			var func = function(exception, cause) {
+				$delegate(exception, cause);
+				func.errorMsg = exception.name + ": " + exception.message;
+			};
+			func.errorMsg = null;
+			return func;
+		});
+	})
     // for displaying error message
     .directive("displayError", function() {
         return {

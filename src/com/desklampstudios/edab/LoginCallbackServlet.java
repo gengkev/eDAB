@@ -67,10 +67,8 @@ public class LoginCallbackServlet extends HttpServlet {
 			return;
 		}
 
-		session.setAttribute("access_token", access_token);
-
 		// Try to get user data from Google Apps.
-		// userData is *not* the user object from the database! It's simply used to store the data.
+		// userData is *not* the user object from the database! It's simply used for passing the data here.
 		User userData = null;
 		try {
 			userData = GoogleOAuthClient.getUserData(access_token);
@@ -85,43 +83,50 @@ public class LoginCallbackServlet extends HttpServlet {
 
 		// Get the user from the datastore
 		User user = ofy().load().type(User.class).id(userData.id).get();
-		
 
 		// user does not exist in the datastore
 		if (user == null) {
-			// add user, with needs approval
-			user = new User();
-			user.name = userData.name;
-			user.real_name = userData.real_name;
-			user.id = userData.id;
-			user.fcps_id = userData.fcps_id;
-			user.gender = userData.gender;
-
-			// for now we'll let it slide
-			// user.accountState = User.AccountState.NEEDS_APPROVAL;
-			ofy().save().entity(user).now();
-
-			// email meee
-			try {
-				Utils.sendEmail(
-						"user-approval-notify@edab-ds.appspotmail.com",
-						"gengkev@gmail.com", 
-						"User approval notification: " + user.name,
-						"Name: " + userData.name + "\n" + "Student ID: " + userData.fcps_id
-						);
-			} catch (MessagingException e) {
-				log.log(Level.WARNING, "Error notifying of user approval", user);
-			}
+			// try to query for fcps ID
+			user = ofy().load().type(User.class).filter("fcps_id", userData.fcps_id).first().get();
+			
+			
+			// Still null?
+			if (user == null) {
+				// add user to datastore, with Needs Approval
+				user = userData;
+				user.accountState = User.AccountState.NEEDS_APPROVAL;
+				ofy().save().entity(user).now();
+				
+				// email meee
+				try {
+					Utils.sendEmail(
+							"user-approval-notify@edab-ds.appspotmail.com",
+							"gengkev@gmail.com", 
+							"User approval notification: " + user.name,
+							"Name: " + userData.name + "\n" + "Student ID: " + userData.fcps_id
+							);
+				} catch (MessagingException e) {
+					log.log(Level.WARNING, "Error notifying of user approval", user);
+				}
+			}	
 		}
-
+		
+		// Screw with imported accounts later.
+		
+		// Get closeWindow attribute before session is destroyed
+		Object closeWindow = session.getAttribute("closeWindow");
+		
+		// Reset session ID on login - to prevent certain attacks (session fixation?)
+		session = AccountService.initializeSession(req, resp);
+		
+		// store the access token from quite a bit back for revoking
+		session.setAttribute("access_token", access_token);
+		
 		// store the id in the session
 		session.setAttribute("userId", userData.id);
 
 		// if we stored closeWindow, then send a callback to the opener, and close the window. Otherwise, send a redirect.
-		Object closeWindow = session.getAttribute("closeWindow");
-		if (closeWindow != null && ((Boolean) closeWindow)) {
-			session.removeAttribute("closeWindow");
-
+		if (closeWindow != null && closeWindow instanceof Boolean && (Boolean) closeWindow == true) {
 			PrintWriter writer = resp.getWriter();
 			writer.println("<script>try { window.opener.loginCallback(); } catch(e) { window.opener.console.error(e); } window.close();</script>");
 			writer.println("You may now <a href=\"#\" onclick=\"window.close()\">close this window</a>.");

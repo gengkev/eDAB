@@ -1,93 +1,109 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-<servlet-mapping>
-	<servlet-name>Login</servlet-name>
-	<url-pattern>/login</url-pattern>
-</servlet-mapping>
-<servlet>
-	<servlet-name>Login</servlet-name>
-	<servlet-class>com.desklampstudios.edab.LoginServlet</servlet-class>
-</servlet>
+	<servlet-mapping>
+		<servlet-name>Login</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Login</servlet-name>
+		<servlet-class>com.desklampstudios.edab.LoginServlet</servlet-class>
+	</servlet>
 
-<servlet-mapping>
-	<servlet-name>LoginCallback</servlet-name>
-	<url-pattern>/logincallback</url-pattern>
-</servlet-mapping>
-<servlet>
-	<servlet-name>LoginCallback</servlet-name>
-	<servlet-class>com.desklampstudios.edab.LoginCallbackServlet</servlet-class>
-</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginCallback</servlet-name>
+		<url-pattern>/logincallback</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>LoginCallback</servlet-name>
+		<servlet-class>com.desklampstudios.edab.LoginCallbackServlet</servlet-class>
+	</servlet>
 
-<servlet-mapping>
-	<servlet-name>Logout</servlet-name>
-	<url-pattern>/logout</url-pattern>
-</servlet-mapping>
-<servlet>
-	<servlet-name>Logout</servlet-name>
-	<servlet-class>com.desklampstudios.edab.LogoutServlet</servlet-class>
-</servlet>
+	<servlet-mapping>
+		<servlet-name>Logout</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Logout</servlet-name>
+		<servlet-class>com.desklampstudios.edab.LogoutServlet</servlet-class>
+	</servlet>
 
-<!-- Jersey stuff??? -->
-<servlet-mapping>
-    <servlet-name>Jersey</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
-</servlet-mapping>
-<servlet>
-    <servlet-name>Jersey</servlet-name>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-    <init-param>
-        <param-name>com.sun.jersey.config.property.packages</param-name>
-        <param-value>com.desklampstudios.edab.rest</param-value>
-    </init-param>
-</servlet>
+	<!-- Jersey stuff -->
+	<servlet-mapping>
+		<servlet-name>Jersey</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Jersey</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>com.desklampstudios.edab</param-value>
+		</init-param>
+	</servlet>
 
-<!-- Objectify filter -->
-<filter>
-        <filter-name>ObjectifyFilter</filter-name>
-        <filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
-</filter>
-<filter-mapping>
-        <filter-name>ObjectifyFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-</filter-mapping>
+	<!-- Session cleanup servlet -->
+	<servlet>
+		<servlet-name>_ah_sessioncleanup</servlet-name>
+		<servlet-class>com.google.apphosting.utils.servlet.SessionCleanupServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>_ah_sessioncleanup</servlet-name>
+		<url-pattern>/_ah/sessioncleanup</url-pattern>
+	</servlet-mapping>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/_ah/sessioncleanup</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
 
-<!--  Serve index.html as the root -->
-<welcome-file-list>
-	<welcome-file>index.html</welcome-file>
-</welcome-file-list>
+	<!-- Objectify filter -->
+	<filter>
+		<filter-name>ObjectifyFilter</filter-name>
+		<filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ObjectifyFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
-<!--  Always serve HTTPS. -->
-<security-constraint>
-    <web-resource-collection>
-        <url-pattern>/*</url-pattern>
-    </web-resource-collection>
-    <user-data-constraint>
-        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-</security-constraint>
+	<!-- Always serve HTTPS. -->
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 
-<session-config>
-    <session-timeout>604800</session-timeout>
-</session-config>
+	<!-- 
+		Expire time for session on server
+		Currently one day (in *minutes*)
+		Also see system property in appengine-web.xml
+	-->
+	<session-config>
+		<session-timeout>1440</session-timeout>
+	</session-config>
 
-<!-- Serve STS for one week -->
-<static-files>
-    <include path="/*">
-        <http-header name="Strict-Transport-Security" value="max-age=604800"/>
-    </include>
-</static-files>
-
-<!--  wut is this -->
- <servlet>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
-  <init-param>
-   <param-name>services</param-name>
-   <param-value/>
-  </init-param>
- </servlet>
- <servlet-mapping>
-  <servlet-name>SystemServiceServlet</servlet-name>
-  <url-pattern>/_ah/spi/*</url-pattern>
- </servlet-mapping>
+	<!-- idk stuff GAE added -->
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value />
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
 </web-app>
