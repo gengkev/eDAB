@@ -45,7 +45,7 @@ public class Utils {
 		"Chris Peterson and Bennett Rill, rest in peace. We will miss you.",
 		"He doesn't do math. Except for when he does math, of course.",
 		"C is for Brandon! But, additionally, B is for Jnanadeep. :)",
-		"I don't speak English. No hablo español. Je ne parle pas français.",
+		"I don't speak English. No hablo espaï¿½ol. Je ne parle pas franï¿½ais.",
 		"If I only die once, I wanna die with you...and get hit by a truck...",
 		"We are God of stories, but please tell me, what there is to complain about?",
 		"Been here all along, so why can't you see? You belong with me...",
