@@ -42,7 +42,7 @@ public class Utils {
 	// Though just SecureRandom-ing and storing a token would probs be better
 	private static final String[] hashingSalts = {
 		"Tripping across the blurry line between friends and more than friends",
-		"Chris Peterson and Bennet Rill, rest in peace. We will miss you.",
+		"Chris Peterson and Bennett Rill, rest in peace. We will miss you.",
 		"He doesn't do math. Except for when he does math, of course.",
 		"C is for Brandon! But, additionally, B is for Jnanadeep. :)",
 		"I don't speak English. No hablo español. Je ne parle pas français.",
@@ -184,8 +184,8 @@ public class Utils {
 		}
 
 		// do some weird stuff and select a hashing salt to use
-		int hashIndex0 = Integer.parseInt(sessionId.charAt(0) + "", 36) % sessionId.length();
-		int hashIndex1 = Integer.parseInt(sessionId.charAt(hashIndex0) + "", 36) % hashingSalts.length;
+		int hashIndex0 = sessionId.charAt(0) % sessionId.length();
+		int hashIndex1 = sessionId.charAt(hashIndex0) % hashingSalts.length;
 		String hashSalt = hashingSalts[hashIndex1];
 
 		SecretKeySpec secret = new SecretKeySpec(hashSalt.getBytes(), "HmacSha256");
