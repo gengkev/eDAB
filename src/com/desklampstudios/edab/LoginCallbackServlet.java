@@ -14,13 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.utils.SystemProperty;
-import com.googlecode.objectify.ObjectifyService;
 
 @SuppressWarnings("serial")
 public class LoginCallbackServlet extends HttpServlet {
-	static {
-		ObjectifyService.register(User.class);
-	}
 	public static boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
 	private static final Logger log = Logger.getLogger(LoginCallbackServlet.class.getName());
 
@@ -42,10 +38,10 @@ public class LoginCallbackServlet extends HttpServlet {
 		// calculate the CSRF token
 		String csrfToken = Utils.getCsrfTokenFromSessionId(session.getId());
 
-		// make sure the query param matches the stored state (CSRF protection)
+		// make sure the query param matches the correct CSRF token
 		if (stateParam == null || !stateParam.equals(csrfToken)) {
-			resp.sendError(400, "Invalid state");
-			log.log(Level.INFO, "Invalid state", stateParam);
+			resp.sendError(400, "Invalid CSRF token");
+			log.log(Level.INFO, "Invalid CSRF token", stateParam);
 			return;
 		} else if (error != null) { // check if there's an error
 			resp.sendError(531, "Authentication attempt unsuccessful");
@@ -78,8 +74,17 @@ public class LoginCallbackServlet extends HttpServlet {
 			return;
 		}
 
+
+		// store the access token from quite a bit back for revoking
+		session.setAttribute("access_token", access_token);
+
+		// store the id in the session
+		session.setAttribute("userId", userData.id);
+
+
 		// log log log
 		log.log(Level.INFO, "Logged in user id " + userData.id + " w/ username " + userData.fcps_id);
+
 
 		// Get the user from the datastore
 		User user = ofy().load().type(User.class).id(userData.id).get();
@@ -117,20 +122,15 @@ public class LoginCallbackServlet extends HttpServlet {
 
 		// Screw with imported accounts later.
 
-		// Get closeWindow attribute before session is destroyed
-		Object closeWindow = session.getAttribute("closeWindow");
-
-		// Reset session ID on login - to prevent certain attacks (session fixation?)
-		session = AccountService.initializeSession(req, resp);
-
-		// store the access token from quite a bit back for revoking
-		session.setAttribute("access_token", access_token);
-
-		// store the id in the session
-		session.setAttribute("userId", userData.id);
+		// Rotate  session ID on login - to prevent certain attacks (session fixation?)
+		session = AccountService.rotateSession(req, resp);
+		
 
 		// if we stored closeWindow, then send a callback to the opener, and close the window. Otherwise, send a redirect.
-		if (closeWindow != null && closeWindow instanceof Boolean && (Boolean) closeWindow == true) {
+		Boolean closeWindow = (Boolean) session.getAttribute("closeWindow");
+		session.removeAttribute("closeWindow");
+		
+		if (closeWindow) {
 			PrintWriter writer = resp.getWriter();
 			writer.println("<script>try { window.opener.loginCallback(); } catch(e) { window.opener.console.error(e); } window.close();</script>");
 			writer.println("You may now <a href=\"#\" onclick=\"window.close()\">close this window</a>.");

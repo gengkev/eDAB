@@ -10,16 +10,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -32,6 +31,7 @@ public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
 
 	// To be appended to JSON strings in responses as a deterrent to CSRF.
+	// Stripped automatically by angularjs
 	public static final String JsonPad = ")]}',\n";
 
 	// System property, set in appengine-web.xml

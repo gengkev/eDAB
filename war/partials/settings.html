@@ -52,7 +52,7 @@
 		<div class="control-group">
 			<label class="control-label">Team</label>
 			<div class="controls">
-				<select ng-model="user.team" ng-options="(t.letter+' ('+t.name+')') group by t.grade for t in teams">
+				<select disabled="disabled" ng-model="user.team" ng-options="(t.letter+' ('+t.name+')') group by t.grade for t in teams">
 					<option value=""></option>
 				</select>
 			</div>
@@ -74,8 +74,8 @@
 		
 		<div class="control-group">
 			<div class="controls">
-				<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged()">Save</button>
-				<button class="btn" ng-click="reset()" ng-disabled="isUnchanged()">Reset</button>
+				<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged() || disableButtons">Save</button>
+				<button class="btn" ng-click="reset()" ng-disabled="isUnchanged() || disableButtons">Reset</button>
 			</div>
 		</div>
 	</form>

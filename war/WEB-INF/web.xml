@@ -63,6 +63,11 @@
 			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
+	
+	<!-- ServletContextListener to register Objectify entities -->
+	<listener>
+		<listener-class>com.desklampstudios.edab.InitListener</listener-class>
+	</listener>
 
 	<!-- Objectify filter -->
 	<filter>

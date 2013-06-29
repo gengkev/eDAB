@@ -75,12 +75,12 @@ nav a.brand:hover {
 */
 
 .btn-signin {
-    border: 2px solid hsl(0, 80%, 56%);
+	border: 2px solid hsl(0, 80%, 56%);
 	border-radius: 6px;
-    color: #fff;
+	color: #fff;
 	font-size: 18px;
 	padding: 8px 8px 8px 48.5px;
-    background-color: hsl(3, 99%, 65%);
+	background-color: hsl(3, 99%, 65%);
 
 	background-image: url("img/fcps.png");
 	background-repeat: no-repeat;
@@ -90,7 +90,7 @@ nav a.brand:hover {
 }
 
 .btn-signin:hover, .btn-signin:focus, .btn-signin:active {
-    background-color: hsl(0, 80%, 56%);
+	background-color: hsl(0, 80%, 56%);
 }
 
 #infobox-container {

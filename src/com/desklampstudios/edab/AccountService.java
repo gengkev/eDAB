@@ -1,5 +1,9 @@
 package com.desklampstudios.edab;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -43,7 +47,7 @@ public class AccountService {
 		if (!checkCSRFToken(session.getId(), providedCSRF)) {
 			// Invalidate the session, initialize a new session, and send an error response.
 			AccountService.initializeSession(req, resp);
-			throw new eDABException.InvalidSessionException("Invalid CSRF token in header");
+			throw new eDABException.InvalidRequestException("Invalid CSRF token in header");
 		}
 
 		String currentUserId = (String) session.getAttribute("userId");
@@ -70,8 +74,8 @@ public class AccountService {
 	 * 
 	 * @param req
 	 * @param resp
+	 * @return The new session
 	 */
-
 	static HttpSession initializeSession(HttpServletRequest req, HttpServletResponse resp) {		
 		HttpSession session = req.getSession(false); // attempts to get session
 		if (session != null) {
@@ -89,5 +93,42 @@ public class AccountService {
 		resp.addHeader("Set-Cookie", "XSRF-TOKEN=" + nonce + "; Path=/; max-age=" + Utils.sessionTimeout);
 
 		return session;
+	}
+
+	/**
+	 * Attempts to transfer data from one session to another.
+	 * Use when changing authentication levels to prevent session fixation.
+	 * 
+	 * @param req
+	 * @param resp
+	 * @return The new session
+	 */
+	static HttpSession rotateSession(HttpServletRequest req, HttpServletResponse resp) {
+		HttpSession session = req.getSession(false);
+
+		if (session == null) {
+			return initializeSession(req, resp);
+		}
+
+		// dump all values into HashMap
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		@SuppressWarnings("unchecked") // the docs say so okay
+		Enumeration<String> e = session.getAttributeNames();
+
+		while (e.hasMoreElements()) {
+			String name = e.nextElement();
+			map.put(name, session.getAttribute(name));
+		}
+
+		// invalidate session and get a new one
+		session = initializeSession(req, resp);
+
+		// dump all values back into new session
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			session.setAttribute(entry.getKey(), entry.getValue());
+		}
+
+		return session;		
 	}
 }

@@ -19,13 +19,13 @@ public abstract class eDABException extends WebApplicationException {
 	// Implementing classes
 
 	/**
-	 * The session ID or CSRF token provided was invalid.
+	 * The session ID provided was invalid.
 	 * An effort was made to initialize a new session. Please retry.
 	 */
 	public static class InvalidSessionException extends eDABException {
 		private static final long serialVersionUID = 6771545690511460502L;
 		private static final String errorName = "InvalidSession";
-		private static final int statusCode = 400;
+		private static final int statusCode = 403;
 		public InvalidSessionException(String msg) { super(statusCode, errorName, msg); }
 	}
 
@@ -35,7 +35,7 @@ public abstract class eDABException extends WebApplicationException {
 	public static class NotLoggedInException extends eDABException {
 		private static final long serialVersionUID = 7188934040817872477L;
 		private static final String errorName = "NotLoggedIn";
-		private static final int statusCode = 401;
+		private static final int statusCode = 403;
 		public NotLoggedInException(String msg) { super(statusCode, errorName, msg); }
 	}
 

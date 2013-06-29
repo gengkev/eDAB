@@ -3,15 +3,17 @@
 var app = angular.module('eDAB-app', ['eDAB-utils']);
 
 app.config(function($routeProvider) {
-		$routeProvider.
-			when('/agenda'  , {controller: AgendaCtrl  , templateUrl: 'partials/agenda.html'  }).
-			when('/calendar', {controller: CalendarCtrl, templateUrl: 'partials/calendar.html'}).
-			when('/courses' , {controller: CoursesCtrl , templateUrl: 'partials/courses.html' }).
-			when('/settings', {controller: SettingsCtrl, templateUrl: 'partials/settings.html'}).
-			otherwise({redirectTo: '/agenda'});
+		$routeProvider
+			.when('/agenda'   , {controller: AgendaCtrl  , templateUrl: 'partials/agenda.html'  })
+			.when('/calendar' , {controller: CalendarCtrl, templateUrl: 'partials/calendar.html'})
+			.when('/courses'  , {controller: CoursesCtrl , templateUrl: 'partials/courses.html' })
+			.when('/settings' , {controller: SettingsCtrl, templateUrl: 'partials/settings.html'})
+			.when('/u/:userId', {controller: UserCtrl    , templateUrl: 'partials/user.html'    })
+			.otherwise({redirectTo: '/agenda'});
 	});
 
-app.service('appService', function($http, $window, $q) {
+// This needs to be cleaned up. Big time.
+app.service('appService', function($http, $window, $q, $rootScope) {
 	var self = this;
 	
 	// Default handling for authorized requests.
@@ -34,6 +36,7 @@ app.service('appService', function($http, $window, $q) {
 				
 				// If we're not logged in
 				else if (response.data.error.name == "NotLoggedIn") {
+					self.auth.user = null;
 					self.auth.logged_in = false;
 				}
 				
@@ -52,6 +55,21 @@ app.service('appService', function($http, $window, $q) {
 		logged_in: null, // null=loading, true, false
 		
 		user: null,
+		
+		updateUser: function(newUser) {
+			newUser = angular.copy(newUser);
+			
+			return $http({
+				method: "PUT",
+				url: "/rest/account/currentUser",
+				data: newUser
+			})
+			.then(self._reqHandler.success, self._reqHandler.error)
+			.then(function(response) {
+				console.log("Saved user. Response: ", response);
+				self.auth.user = newUser;
+			});
+		},
 		
 		login: function() {
 			// $window.location.replace("/login");
@@ -78,66 +96,20 @@ app.service('appService', function($http, $window, $q) {
 				url: "/rest/account/currentUser"
 			})
 			.then(self._reqHandler.success, self._reqHandler.error)
-			.then(function(response) {
-				console.log("Loaded user - response:", response);
+			.then(function(response) {				
+				console.log("Loaded user. Response:", response);
 				self.auth.user = response.data;
 			});
 		}
 	};	
 })
-app.run(function(appService) {
+app.run(function(appService, $rootScope) {
 	appService.auth.check();
+	
+	$rootScope.$watch(function() { return appService.auth.logged_in; }, function(newVal) {
+		$rootScope.$broadcast("loginStateChange", newVal);
+	})
 });
-
-		/*
-		check: function () {
-			//_this.auth.logged_in = false;
-			_this.rpc._request("getCurrentUser", null)
-				.then(function(resp) {
-					if (resp.data && resp.data.result && !resp.data.error) {
-						console.log(resp);
-						_this.auth.logged_in = true;
-						_this.user.name = resp.data.result.name;
-						_this.user.fcps_id = resp.data.result.fcps_id;
-						
-						$location.path("/settings");
-					} else {
-						console.error(resp);
-						_this.auth.logged_in = false;
-						try {
-							$rootScope.showError(JSON.stringify(resp.data.error));
-						} catch(e) {}
-					}
-				});
-		}
-	};
-	_this.user = {
-		name: null,
-		fcps_id: null
-	};
-	_this.rpc = {
-		_counter: 0,
-		_request: function(method, params) {
-			return $http({
-				method: "POST",
-				url: RPC_URL,
-				data: {
-					"jsonrpc": "2.0",
-					"method": method,
-					"params": params,
-					"id": _this.rpc._counter++
-				}
-			});
-		}
-	};
-	$window._rpcRequest = function(method, params) {
-		return _this.rpc._request(method, params);
-	};
-})
-.run(function(server) {
-	server.auth.check();
-});
-*/
 
 
 function AppCtrl($scope, appService, $exceptionHandler) {
@@ -183,6 +155,10 @@ function SettingsCtrl($scope, $location, appService) {
 	$scope.service = appService;
 	$scope.user = angular.copy(appService.auth.user);
 	
+	$scope.$on("loginStateChange", function(newState) {
+		$scope.user = angular.copy(appService.auth.user);
+	});
+	
 	$scope.schools = [
 		{"name": "Rachel Carson MS"}
 	];
@@ -203,9 +179,15 @@ function SettingsCtrl($scope, $location, appService) {
 		return angular.equals(appService.auth.user, $scope.user);
 	};
 	$scope.save = function() {
-		appService.auth.user = angular.copy($scope.user);
+		// so people don't accidentally submit twice
+		$scope.disableButtons = true;
 		
-		// and other stuff
+		appService.auth.updateUser($scope.user)
+		.then(function() {
+			$scope.disableButtons = false;
+		}, function() {
+			$scope.disableButtons = false;
+		});
 	};
 	$scope.reset = function() {
 		$scope.user = angular.copy(appService.auth.user);
@@ -214,4 +196,6 @@ function SettingsCtrl($scope, $location, appService) {
 	$scope.$watch("appService.auth.user", function() {
 		$scope.reset();
 	});
+}
+function UserCtrl() {
 }
