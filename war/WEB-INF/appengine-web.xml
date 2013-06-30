@@ -32,5 +32,7 @@
 			-->
 			<http-header name="Strict-Transport-Security" value="max-age=604800" />
 		</include>
+		
+		<include path="/lib/*" expiration="1000d" />
 	</static-files>
 </appengine-web-app>

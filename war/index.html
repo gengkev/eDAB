@@ -10,9 +10,16 @@
             display: none;
         }
     </style>
-	<link rel="stylesheet" href="lib/bootstrap/bootstrap.css"/>
-	<link rel="stylesheet" href="lib/bootstrap/bootstrap-responsive.css"/>
-    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css"/>
+	
+	<!-- Development -->
+	<link rel="stylesheet" href="lib/bootstrap-2.3.2/bootstrap.css"/>
+	<link rel="stylesheet" href="lib/bootstrap-2.3.2/bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="lib/font-awesome-3.2.1/css/font-awesome.css"/>
+	<!-- Production
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css"/>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css"/>
+	-->
+	
 	<link rel="stylesheet" href="main.css"/>
 </head>
 <body ng-controller="AppCtrl">
@@ -68,11 +75,19 @@
 	</div>
     
 	<!-- will implement async script loading eventually -->
-	<script src="lib/angular/angular.js"></script>
-    <script src="lib/angular/angular-bootstrap.js"></script>
-    <script src="lib/angular/angular-resource.js"></script>
+	
+	<!-- Development -->
+	<script src="lib/angular-1.0.7/angular.js"></script>
+    <script src="lib/angular-1.0.7/angular-resource.js"></script>
+	<!-- Production 
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
+	-->
+	
 	<script src="app.js"></script>
     <script src="utils.js"></script>
+	
+	
 	<!-- woo g+ snippet dont feel like putting async loading code so heres a nice attribute -->
 	<script src="https://apis.google.com/js/plusone.js" async="async"></script>
 </body>

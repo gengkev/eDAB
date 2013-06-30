@@ -23,8 +23,9 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 			return response;
 		},
 		error: function(response) {
+
+				console.info("Request error", response.data.error);
 			if (response.data.error) {
-				// console.info("Request error", response.data.error);
 				
 				// If the session needs to be initialized, we can retry it. But only retry once.
 				if (response.data.error.name == "InvalidSession" && !response.config.retry) {
