@@ -23,14 +23,14 @@ public class User {
 	}
 
 
-	public @Id                  String id; // google userid
-	public @Index               String name;
-	public                      String real_name;
-	@Index @Load(Courses.class) List<Ref<Course>> courses;
-	public @Index               String fcps_id; // fcpsschools.net user email
-	public                      Gender gender;
-	private                     Text bio;
-	@Index(IfNotNull.class)     AccountState accountState;
+	public @Id              String id; // google userid
+	public @Index           String fcps_id; // fcpsschools.net user email
+	public @Index           String name;
+	public                  String real_name;
+	@Load(Courses.class)    List<Ref<Course>> courses;
+	public                  Gender gender;
+	private                 Text bio;
+	@Index(IfNotNull.class) AccountState accountState;
 	
 	public String getBio() {
 		if (bio == null) return null;

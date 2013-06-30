@@ -1,0 +1,18 @@
+<div class="page-header">
+	<h1>
+		{{user.name || "Loading..."}}
+		<small>{{user.fcps_id}}</small>
+	</h1>
+</div>
+<h3>About me</h3>
+<p class="lead preserve-whitespace">
+	{{user.bio}}
+</p>
+
+<h3>Contact info</h3>
+<div>
+<b>Gender:</b> {{user.gender}}<br/>
+<b>User ID:</b> {{user.id}}<br/>
+<b>Student ID:</b> {{user.fcps_id}}<br/>
+<b>Email:</b> <a href="mailto:{{user.fcps_id}}@fcpsschools.net">{{user.fcps_id}}@fcpsschools.net</a><br/>
+</div>

@@ -46,7 +46,7 @@ public class AccountResource {
 		try {
 			json = mapper.writeValueAsString(user);
 		} catch (JsonProcessingException e) {
-			throw new eDABException.InternalServerException("Error converting into JSON: " + e.toString());
+			throw new eDABException.InternalServerException(e.toString());
 		}
 
 		return Response.ok(Utils.JsonPad + json).build();

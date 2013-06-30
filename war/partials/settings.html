@@ -1,5 +1,5 @@
 <fieldset>
-	<legend>Login details</legend>
+	<legend>Edit profile</legend>
 	<form class="form-horizontal">
 		<div class="control-group">
 			<label class="control-label">Name</label>
@@ -59,13 +59,6 @@
 		</div>
 		
 		<div class="control-group">
-			<label class="control-label">Courses</label>
-			<div class="controls">
-				<button class="btn">Edit courses</button>
-			</div>
-		</div>
-		
-		<div class="control-group">
 			<label class="control-label">Biography</label>
 			<div class="controls">
 				<textarea ng-model="user.bio"></textarea>
@@ -79,10 +72,23 @@
 			</div>
 		</div>
 	</form>
+</fieldset>
+
+<fieldset>
+	<legend>Profile URL</legend>
+	<p>
+		Short: <a href="/u/~{{user.fcps_id}}">edab-ds.appspot.com/u/~{{user.fcps_id}}</a><br/>
+		Permalink: <a href="/u/{{user.id}}">edab-ds.appspot.com/u/{{user.id}}</a>
+	</p>
+</fieldset>
+
+<fieldset>
+	<legend>Sign out</legend>
 	<p>
 		<button class="btn btn-danger" ng-click="service.auth.logout()">Sign out and revoke tokens</button>
 	</p>
 </fieldset>
+
 <fieldset itemscope itemprop="author">
 	<legend>About</legend>
 	<p>

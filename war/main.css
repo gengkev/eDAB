@@ -136,3 +136,7 @@ nav a.brand:hover {
 	z-index: 4;
 	border-radius: 0 0 5px 5px;
 }*/
+
+.preserve-whitespace {
+	white-space: pre-wrap;
+}

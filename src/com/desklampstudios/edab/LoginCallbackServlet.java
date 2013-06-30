@@ -130,7 +130,7 @@ public class LoginCallbackServlet extends HttpServlet {
 		Boolean closeWindow = (Boolean) session.getAttribute("closeWindow");
 		session.removeAttribute("closeWindow");
 		
-		if (closeWindow) {
+		if (closeWindow != null && closeWindow == true) {
 			PrintWriter writer = resp.getWriter();
 			writer.println("<script>try { window.opener.loginCallback(); } catch(e) { window.opener.console.error(e); } window.close();</script>");
 			writer.println("You may now <a href=\"#\" onclick=\"window.close()\">close this window</a>.");

@@ -2,14 +2,16 @@
 
 var app = angular.module('eDAB-app', ['eDAB-utils']);
 
-app.config(function($routeProvider) {
+app.config(function($routeProvider, $locationProvider) {
 		$routeProvider
-			.when('/agenda'   , {controller: AgendaCtrl  , templateUrl: 'partials/agenda.html'  })
-			.when('/calendar' , {controller: CalendarCtrl, templateUrl: 'partials/calendar.html'})
-			.when('/courses'  , {controller: CoursesCtrl , templateUrl: 'partials/courses.html' })
-			.when('/settings' , {controller: SettingsCtrl, templateUrl: 'partials/settings.html'})
-			.when('/u/:userId', {controller: UserCtrl    , templateUrl: 'partials/user.html'    })
+			.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
+			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
+			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
+			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
+			.when('/u/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
 			.otherwise({redirectTo: '/agenda'});
+		
+		$locationProvider.html5Mode(true);
 	});
 
 // This needs to be cleaned up. Big time.
@@ -23,8 +25,8 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 			return response;
 		},
 		error: function(response) {
-
-				console.info("Request error", response.data.error);
+			console.info("Request error", response.data.error);
+			
 			if (response.data.error) {
 				
 				// If the session needs to be initialized, we can retry it. But only retry once.
@@ -111,7 +113,9 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 				self.auth.user = response.data;
 			});
 		}
-	};	
+	};
+	
+	
 })
 app.run(function(appService, $rootScope) {
 	appService.auth.check();
@@ -207,5 +211,23 @@ function SettingsCtrl($scope, $location, appService) {
 		$scope.reset();
 	});
 }
-function UserCtrl() {
+
+function UserCtrl($scope, $routeParams, $http, $location, appService) {
+	var username = $routeParams.username;
+	$http({
+		method: "GET",
+		url: "/rest/users/" + username
+	})
+	.then(function(response) {
+		console.log("Loaded user: ", response);
+		$scope.user = response.data;
+	}, function(response) {
+		if (response.status == 404) {
+			alert("User not found!");
+			$location.path("/");
+		} else {
+			// uh idk
+			appService._reqHandler.error(response);
+		}
+	});
 }
