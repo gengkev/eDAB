@@ -33,6 +33,7 @@ public class User {
 	@Index(IfNotNull.class)     AccountState accountState;
 	
 	public String getBio() {
+		if (bio == null) return null;
 		return bio.getValue();
 	}
 	public void setBio(String str) {

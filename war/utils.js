@@ -64,7 +64,7 @@ angular.module("eDAB-utils", [])
                 + '</div>'
         };
     })
-    .run(function($window, $rootScope, $exceptionHandler) {
+    .run(function($window) {
         // Google Analytics snippet
 		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
 		(function(d, t) {

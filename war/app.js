@@ -24,7 +24,7 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 		},
 		error: function(response) {
 			if (response.data.error) {
-				console.info("Request error", response.data.error);
+				// console.info("Request error", response.data.error);
 				
 				// If the session needs to be initialized, we can retry it. But only retry once.
 				if (response.data.error.name == "InvalidSession" && !response.config.retry) {
@@ -43,9 +43,18 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 				else if (response.data.error.name == "NeedsApproval") {
 					alert("Lalala you need to be manually approved first");
 				}
+				
+				else {
+					throw response.data.error;
+				}
+				
+			} else {
+				throw {
+					name: response.status,
+					message: "Unexpected HTTP error"
+				};
 			}
 			
-			// If we don't otherwise handle it...
 			return $q.reject(response);
 		}
 	};

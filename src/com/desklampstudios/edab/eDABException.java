@@ -10,7 +10,8 @@ public abstract class eDABException extends WebApplicationException {
 	
 	protected eDABException(int statusCode, String errorName, String msg) {
 		super(Response.status(statusCode)
-				.entity(Utils.JsonPad + "{\"error\": {\"name\": \"" + errorName + "\", \"message\": \"" + msg + "\"}}")
+				.entity(Utils.JsonPad + 
+						"{\"error\": {\"name\": \"" + errorName + "\", \"message\": \"" + msg.replace("\"", "\\\"") + "\"}}")
 				.type("application/json")
 				.build());
 	}

@@ -32,6 +32,8 @@ public class AccountResource {
 
 		// now we must actually get the user info
 		User user = ofy().load().type(User.class).id(currentUserId).get();
+		
+		assert user != null;
 
 		if (user.accountState != null && user.accountState == User.AccountState.NEEDS_APPROVAL) {
 			throw new eDABException.NeedsApprovalException("");
@@ -44,7 +46,7 @@ public class AccountResource {
 		try {
 			json = mapper.writeValueAsString(user);
 		} catch (JsonProcessingException e) {
-			throw new eDABException.InternalServerException(e.toString());
+			throw new eDABException.InternalServerException("Error converting into JSON: " + e.toString());
 		}
 
 		return Response.ok(Utils.JsonPad + json).build();
