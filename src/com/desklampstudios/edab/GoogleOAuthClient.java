@@ -1,11 +1,12 @@
 package com.desklampstudios.edab;
 
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 
 import com.desklampstudios.edab.User.Gender;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +21,7 @@ public class GoogleOAuthClient {
 
 	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
 	private static final String CLIENT_SECRET = "dj908LVbvrMsHJb0KFZxL1tB";
-	private static final String SCOPES = "openid%20profile%20email";
+	private static final String SCOPES = "openid profile email";
 
 	/*
 	protected static String getRedirectURL() {
@@ -40,26 +41,30 @@ public class GoogleOAuthClient {
 				req.getServerPort();
 	}
 
-	protected static String getEndpointURL(String host, String state) {
-		String url = "https://accounts.google.com/o/oauth2/auth";
-		url += "?response_type=code";
-		url += "&client_id=" + CLIENT_ID;
-		url += "&redirect_uri=" + getRedirectURL(host);
-		url += "&scope=" + SCOPES;
-		url += "&hd=fcpsschools.net";
-		url += "&state=" + state;
+	protected static String getEndpointURL(String host, String csrfToken) {
+		UriBuilder uri = UriBuilder.fromUri("https://accounts.google.com/o/oauth2/auth");
+		uri.queryParam("response_type", "code");
+		uri.queryParam("client_id", CLIENT_ID);
+		uri.queryParam("redirect_uri", getRedirectURL(host));
+		uri.queryParam("scope", SCOPES);
+		uri.queryParam("hd", "fcpsschools.net");
+		uri.queryParam("state", csrfToken);
 
-		return url;
+		return uri.build().toString();
 	}
 
 	protected static String getAccessToken(String authCode, String host) throws Exception {
 		// Open the connection to the access token thing
-		String params = "code=" + URLEncoder.encode(authCode, "UTF-8") +
-				"&client_id=" + CLIENT_ID +
-				"&client_secret=" + CLIENT_SECRET +
-				"&redirect_uri=" + getRedirectURL(host) +
-				"&grant_type=authorization_code";
-
+		UriBuilder uri = UriBuilder.fromPath("");
+		uri.queryParam("code", authCode);
+		uri.queryParam("client_id", CLIENT_ID);
+		uri.queryParam("client_secret", CLIENT_SECRET);
+		uri.queryParam("redirect_uri", getRedirectURL(host));
+		uri.queryParam("grant_type", "authorization_code");
+		
+		// substring(1) to get rid of the ? that's found in urls
+		String params = uri.build().toString().substring(1);
+		
 		String output = null;
 		try {
 			output = Utils.fetchURL(
@@ -80,14 +85,12 @@ public class GoogleOAuthClient {
 			JsonNode rootNode = m.readTree(output);
 			access_token = rootNode.path("access_token").textValue();
 		} catch (Exception e) {
-			//log.log(Level.WARNING, "Error parsing JSON", e);
-			log.log(Level.INFO, "JSON that failed", output);
+			log.log(Level.INFO, "Error parsing JSON:\n" + output);
 			throw e;
 		}
 
 		if (access_token == null) {
-			//log.log(Level.WARNING, "No access token found in JSON!");
-			log.log(Level.INFO, "JSON that failed", output);
+			log.log(Level.WARNING, "No access token found in JSON:\n" + output);
 			throw new Exception("No access token found in JSON!");
 		}
 

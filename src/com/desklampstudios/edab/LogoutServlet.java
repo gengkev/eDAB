@@ -30,16 +30,18 @@ public class LogoutServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 		HttpSession session = req.getSession(false);
+		String sessionId = session.getId();
+		String userId = (String) session.getAttribute("userId");
+		
+		// revoke access token
 		String access_token = (String) session.getAttribute("access_token");
 		revokeAccessToken(access_token);
 		
-		/*
-		Cookie cookie = new Cookie("JSESSIONID", "");
-		cookie.setMaxAge(-1);
-		resp.addCookie(cookie);
-		 */
-		
 		// Invalidates old session and creates new one
 		AccountService.initializeSession(req, resp);
+		
+		// log log log
+
+		log.log(Level.FINE, "Logged out, sessid: " + sessionId + ", userid: " + userId);
 	}
 }

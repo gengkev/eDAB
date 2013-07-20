@@ -13,11 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.appengine.api.utils.SystemProperty;
-
 @SuppressWarnings("serial")
 public class LoginCallbackServlet extends HttpServlet {
-	public static boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
 	private static final Logger log = Logger.getLogger(LoginCallbackServlet.class.getName());
 
 	@Override
@@ -83,7 +80,7 @@ public class LoginCallbackServlet extends HttpServlet {
 
 
 		// log log log
-		log.log(Level.INFO, "Logged in user id " + userData.id + " w/ username " + userData.fcps_id);
+		log.log(Level.FINE, "Logged in, sessid: " + session.getId() + ", user: " + userData.toString());
 
 
 		// Get the user from the datastore
@@ -112,10 +109,11 @@ public class LoginCallbackServlet extends HttpServlet {
 							"user-approval-notify@edab-ds.appspotmail.com",
 							"gengkev@gmail.com", 
 							"User approval notification: " + user.name,
-							"Name: " + userData.name + "\n" + "Student ID: " + userData.fcps_id
+							"User details:\n" + user.toString()
 							);
+					log.log(Level.INFO, "Sent notification approval for user " + user.toString());
 				} catch (MessagingException e) {
-					log.log(Level.WARNING, "Error notifying of user approval", user);
+					log.log(Level.WARNING, "Error notifying of user approval", user.toString());
 				}
 			}	
 		}
