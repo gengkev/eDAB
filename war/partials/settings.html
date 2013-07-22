@@ -1,12 +1,12 @@
 <fieldset>
-	<legend>Edit profile</legend>
+	<legend>About me</legend>
 	<form class="form-horizontal">
 		<div class="control-group">
 			<label class="control-label">Name</label>
 			<div class="controls">
 				{{user.name}}
 				<!--
-				<input type="text" ng-model="user.name" disabled="disabled"/>
+				<input type="text" ng-model="user.name" readonly="readonly"/>
 				-->
 				&nbsp;
 				<div style="display:inline-block">
@@ -29,6 +29,18 @@
 			</div>
 		</div>
 		
+		<div class="control-group">
+			<label class="control-label">URL</label>
+			<div class="controls">
+				<a href="/u/~{{user.fcps_id}}">edab-ds.appspot.com/u/~{{user.fcps_id}}</a>
+			</div>
+		</div>
+	</form>
+</fieldset>
+
+<fieldset>
+	<legend>Edit profile</legend>
+	<form class="form-horizontal">
 		<div class="control-group">
 			<label class="control-label">Gender</label>
 			<div class="controls">
@@ -56,6 +68,7 @@
 			</div>
 		</div>
 		
+		<!--
 		<div class="control-group">
 			<label class="control-label">Team</label>
 			<div class="controls">
@@ -64,11 +77,12 @@
 				</select>
 			</div>
 		</div>
+		-->
 		
 		<div class="control-group">
 			<label class="control-label">Biography</label>
 			<div class="controls">
-				<textarea ng-model="user.bio"></textarea>
+				<textarea ng-model="user.bio" class="input-xlarge"></textarea>
 			</div>
 		</div>
 		
@@ -81,6 +95,7 @@
 	</form>
 </fieldset>
 
+<!--
 <fieldset>
 	<legend>Profile URL</legend>
 	<p>
@@ -88,6 +103,7 @@
 		Permalink: <a href="/u/{{user.id}}">edab-ds.appspot.com/u/{{user.id}}</a>
 	</p>
 </fieldset>
+-->
 
 <fieldset>
 	<legend>Sign out</legend>
@@ -96,12 +112,16 @@
 	</p>
 </fieldset>
 
-<fieldset itemscope itemprop="author">
+<fieldset id="aboutEdab" itemscope itemprop="author">
 	<legend>About</legend>
 	<p>
 		eDAB is a product of <a href="http://gengkev.github.com/desklampstudios" itemprop="url">Desklamp Studios</a>.
 	</p>
-	
-	<div class="g-plus" data-href="https://plus.google.com/113383006901215901732" data-height="131" data-width="350"></div>
+	<div id="gplus_badge">
+		<div class="g-page" data-href="https://plus.google.com/113383006901215901732" data-width="300" data-rel="publisher"></div>
+	</div>
+	<div class="g-person" data-width="300" data-href="https://plus.google.com/112830849462286532136" data-rel="author"></div>
+	<div class="g-person" data-width="300" data-href="https://plus.google.com/110382605130903206834" data-rel="author"></div>
+	<div class="g-person" data-width="300" data-href="https://plus.google.com/107757960491028812136" data-rel="author"></div>
 </fieldset>
 

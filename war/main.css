@@ -5,20 +5,23 @@
 */
 
 body {
-	background-color: #AE8EF0;
+	background-color: #87CEFA; /* lightskyblue */
+	/*background-size: 100% 100%;*/
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-attachment: fixed;
+	background-image: url("img/114_0141.JPG");
+	
 	overflow-y: scroll;
 }
 .container {
-	/*background-color: rgba(255, 255, 255, 0.75);*/
-	/*border: 10px solid transparent;*/
-	/*border-radius: 0 0 5px 5px;*/
-	/*border-top-style: none;*/
 }
 .page_content {
 	margin: -10px 5px 10px 5px;
 	padding: 20px;
-	background-color: rgba(255, 255, 255, 0.75);
+	background-color: rgba(255, 255, 255, 0.8);
 	border-radius: 0 0 7px 7px;
+	border: 1px solid rgb(180, 180, 180);
 }
 
 .center {
@@ -31,17 +34,19 @@ body {
 nav {
 	position: relative;
 	z-index: 2;
-	border: 1px solid rgba(130, 130, 130, 0.4);
-	box-shadow: 0 0 5px rgba(130, 130, 130, 0.4);
+	border: 1px solid rgb(180, 180, 180);
+	box-shadow: 0 0 10px 0 rgb(180, 180, 180);
 	border-top-style: none;
 	border-radius: 0 0 14px 14px;
-	
 	padding: 10px 20px;
 	margin: auto;
+	
 	/* max-width: 940px; * 940px + 20px padding = 960px */
 	background-color: rgba(255, 255, 255, 1);
 	/*height: 30px; /* + 20px padding = 50px */ 
 	/*overflow: hidden; /* hmm we'll have to deal with mobile */
+	
+	background-image: linear-gradient(to bottom, #FFFFFF, #EEEEEE);
 }
 
 nav ul {
@@ -67,6 +72,7 @@ nav ul li.active a, nav ul li:hover a, nav ul li:focus a, nav ul li:active a {
 	/* color: hsl(0, 0%, 35%); */
 	color: hsl(0, 0%, 55%);
 	text-decoration: none;
+	box-shadow: inset 0 0 4px hsl(0, 0%, 55%);
 }
 nav a.brand {
 	display: inline-block;
@@ -145,4 +151,9 @@ nav a.brand:hover {
 
 .preserve-whitespace {
 	white-space: pre-line;
+}
+
+#gplus_badge {
+	float: left;
+	margin-right: 5px;
 }

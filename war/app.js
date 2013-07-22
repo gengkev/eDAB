@@ -165,7 +165,7 @@ function CalendarCtrl($scope, $location, appService) {
 function CoursesCtrl($scope, $location, appService) {
 }
 
-function SettingsCtrl($scope, $location, appService) {	
+function SettingsCtrl($scope, $location, appService, $window) {	
 	$scope.service = appService;
 	$scope.user = angular.copy(appService.auth.user);
 	
@@ -210,6 +210,12 @@ function SettingsCtrl($scope, $location, appService) {
 	$scope.$watch("appService.auth.user", function() {
 		$scope.reset();
 	});
+	
+	// Initialize Google+ badge
+	if ($window.gapi) {
+		$window.gapi.page.go('aboutEdab');
+		$window.gapi.person.go('aboutEdab');
+	}
 }
 
 function UserCtrl($scope, $routeParams, $http, $location, appService) {

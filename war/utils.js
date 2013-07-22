@@ -65,12 +65,30 @@ angular.module("eDAB-utils", [])
         };
     })
     .run(function($window) {
-        // Google Analytics snippet
-		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
-		(function(d, t) {
-			var g = d.createElement(t),
-			    s = d.getElementsByTagName(t)[0];
-			g.src = '//www.google-analytics.com/ga.js';
-			s.parentNode.insertBefore(g, s);
+		// uhh kind of complicated
+		// we'll fix it eventually with a real loader
+		var loadScript = (function(d, t) {
+			return function(url) {
+				var g = d.createElement(t),
+					s = d.getElementsByTagName(t)[0];
+				g.src = url;
+				s.parentNode.insertBefore(g, s);
+				return g;
+			};
 		}($window.document, 'script'));
+		
+		// Google Analytics snippet
+		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
+		loadScript('//www.google-analytics.com/ga.js');
+		
+		// Google+ badge setup
+		$window.___gcfg = {
+			lang: 'en-US',
+			parsetags: 'explicit'
+		};
+		loadScript('https://apis.google.com/js/plusone.js').onload = function() {
+			// later this needs to be in a Utils service
+			$window.gapi.page.go('aboutEdab');
+			$window.gapi.person.go('aboutEdab');
+		};
 	});

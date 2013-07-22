@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="eDAB-app" itemscope itemtype="http://schema.org/WebApplication">
+<html lang="en" ng-app="eDAB-app" itemscope="itemscope" itemtype="http://schema.org/WebApplication">
 <head>
 	<meta charset="UTF-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1"/>
+	<link rel="publisher" href="https://plus.google.com/113383006901215901732"/>
+	<link rel="canocial" href="https://edab-ds.appspot.com/"/>
+	
 	<title>eDAB</title>
     <style type="text/css">
         [ng-cloak] {
@@ -26,7 +29,7 @@
 	<div class="container">
 		<div id="navbar">
 			<nav>
-				<a class="brand">eDAB</a>
+				<a itemprop="name" class="brand" href="/">eDAB</a>
 				<ul ng-controller="NavCtrl">
 					<li ng-repeat="page in pages" ng-class="{active: onPage(page.path)}">
 						<a href="{{page.path}}" ng-bind="page.name"></a>
@@ -46,7 +49,7 @@
 			<display-error></display-error>
 			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
 				<h3>eDAB brings your assignment book online.</h3>
-				<p>
+				<p itemprop="description">
 					eDAB can help you organize your schedule bla bla bla.
 				</p>
 				<p>
@@ -86,9 +89,5 @@
 	
 	<script src="/app.js"></script>
     <script src="/utils.js"></script>
-	
-	
-	<!-- woo g+ snippet dont feel like putting async loading code so heres a nice attribute -->
-	<script src="https://apis.google.com/js/plusone.js" async="async"></script>
 </body>
 </html>
