@@ -12,12 +12,12 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Path("users/{username}")
+@Path("/users")
 @Consumes("application/json")
 @Produces("application/json")
 public class UserResource {
 	
-	@GET
+	@GET @Path("/{username}")
 	public Response getUser(@PathParam("username") String username) {
 		User user = getUserByUsername(username);
 		if (user == null) {

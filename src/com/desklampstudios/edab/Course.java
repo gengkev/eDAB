@@ -10,7 +10,7 @@ import com.googlecode.objectify.annotation.Load;
 
 @Entity
 public class Course {
-	@Id Long id;
+	@Id long id;
 	@Index String name;
 	String longName;
 	// String fcps_id;

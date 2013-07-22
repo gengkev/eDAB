@@ -47,7 +47,7 @@ angular.module("eDAB-utils", [])
 		$provide.decorator("$exceptionHandler", function($delegate) {
 			var func = function(exception, cause) {
 				$delegate(exception, cause);
-				func.errorMsg = exception.name + ": " + exception.message;
+				func.errorMsg = (exception.name || exception) + ": " + exception.message;
 			};
 			func.errorMsg = null;
 			return func;

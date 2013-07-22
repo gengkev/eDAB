@@ -5,14 +5,13 @@
 	</h1>
 </div>
 <h3>About me</h3>
-<p class="lead preserve-whitespace">
-	{{user.bio}}
-</p>
+<p class="lead preserve-whitespace">{{user.bio}}</p>
 
 <h3>Contact info</h3>
-<div>
-<b>Gender:</b> {{user.gender}}<br/>
-<b>User ID:</b> {{user.id}}<br/>
-<b>Student ID:</b> {{user.fcps_id}}<br/>
-<b>Email:</b> <a href="mailto:{{user.fcps_id}}@fcpsschools.net">{{user.fcps_id}}@fcpsschools.net</a><br/>
-</div>
+<dl class="dl-horizontal">
+	<dt>Real name</dt> <dd>{{user.real_name}}</dd>
+	<dt>Gender</dt>	<dd>{{user.gender}}</dd>
+	<dt>Google User ID</dt> <dd>{{user.id}}</dd>
+	<dt>Student ID</dt> <dd>{{user.fcps_id}}</dd>
+	<dt>Email</dt> <dd><a href="mailto:{{user.fcps_id}}@fcpsschools.net" target="_blank">{{user.fcps_id}}@fcpsschools.net</a></dd>
+</dl>

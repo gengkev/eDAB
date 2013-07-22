@@ -36,6 +36,6 @@ public class LoginServlet extends HttpServlet {
 		resp.setStatus(302);
 		resp.setHeader("Location", GoogleOAuthClient.getEndpointURL(
 				GoogleOAuthClient.getRequestHost(req),
-				csrfToken));
+				Utils.encodeURIComponent(csrfToken)));
 	}
 }
