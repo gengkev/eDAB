@@ -34,9 +34,15 @@ public class User {
 	
 	public String getBio() {
 		if (bio == null) return null;
-		return bio.getValue();
+		else return bio.getValue();
 	}
 	public void setBio(String str) {
-		bio = new Text(str);
+		if (str == null) bio = null;
+		else bio = new Text(str);
+	}
+	
+	@Override
+	public String toString() {
+		return "User object; name: " + name + ", id: " + id + ", fcps_id: " + fcps_id;
 	}
 }

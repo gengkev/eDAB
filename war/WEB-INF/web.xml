@@ -59,6 +59,24 @@
 	    <servlet-name>Welcome</servlet-name>
 	    <servlet-class>com.desklampstudios.edab.WelcomeServlet</servlet-class>
 	</servlet>
+
+	<servlet-mapping>
+	    <servlet-name>FakeLogin</servlet-name>
+	    <url-pattern>/fakelogin</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <servlet-name>FakeLogin</servlet-name>
+	    <servlet-class>com.desklampstudios.edab.FakeLoginServlet</servlet-class>
+	</servlet>
+	
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/fakelogin</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
 	
 	<!-- Jersey stuff -->
 	<servlet-mapping>

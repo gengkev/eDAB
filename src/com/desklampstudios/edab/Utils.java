@@ -27,9 +27,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.xml.bind.DatatypeConverter;
 
+import com.google.appengine.api.utils.SystemProperty;
+
 public class Utils {
 	private static final Logger log = Logger.getLogger(Utils.class.getName());
-
+	public static boolean isProduction = SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;
+	
 	// To be appended to JSON strings in responses as a deterrent to CSRF.
 	// Stripped automatically by angularjs
 	public static final String JsonPad = ")]}',\n";
