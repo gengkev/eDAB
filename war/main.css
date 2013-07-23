@@ -5,9 +5,9 @@
 */
 
 body {
-	background-color: #87CEFA; /* lightskyblue */
+	/* background-color: #87CEFA; /* lightskyblue */
 	/*background-size: 100% 100%;*/
-	background-repeat: no-repeat;
+	background-repeat: repeat;
 	background-position: center center;
 	background-attachment: fixed;
 	background-image: url("img/114_0141.JPG");
