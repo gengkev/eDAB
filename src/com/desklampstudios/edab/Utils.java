@@ -43,24 +43,8 @@ public class Utils {
 	// Uploading this onto Github may not be the best idea, but whateverr
 	// Let's add more than one to make things interesting
 	// Though just SecureRandom-ing and storing a token would probs be better
-	private static final String[] hashingSalts = {
-		"Tripping across the blurry line between friends and more than friends",
-		"Chris Peterson and Bennett Rill, rest in peace. We will miss you.",
-		"He doesn't do math. Except for when he does math, of course.",
-		"C is for Brandon! But, additionally, B is for Jnanadeep. :)",
-		"I don't speak English. No hablo español. Je ne parle pas français.",
-		"If I only die once, I wanna die with you...and get hit by a truck...",
-		"We are God of stories, but please tell me, what there is to complain about?",
-		"Been here all along, so why can't you see? You belong with me...",
-		"Tryna' make it work, but man these times are hard... so we're gonna start by",
-		"print \"Hello, World!\" #  You can't even fit a Java hello world in here",
-		"The above example is incorrect, because it doesn't have enough jQuery.",
-		"Why do programmers get Halloween and December mixed up? Cuz 031 == 25",
-		"We were flying so high, yeah partners in crime, so why'd we ever say goodbye?",
-		"Your sweet moonbeams, the smell of you in every single dream I dream...",
-		"I have died everyday waiting for you. Darling don't be afraid, I have loved you",
-		"I don't know what to say about these strings. *shakes head* silly me."
-	};
+	// ** Moved to Secrets.java **
+	// private static final String[] hashingSalts = { ... };
 
 	// SHA256 produces 256 bits of entropy, or 42-43 base64 chars.
 	// On deployment the session ID is 22 base64 chars, or about *132 bits*.
@@ -188,8 +172,8 @@ public class Utils {
 
 		// do some weird stuff and select a hashing salt to use
 		int hashIndex0 = sessionId.charAt(0) % sessionId.length();
-		int hashIndex1 = sessionId.charAt(hashIndex0) % hashingSalts.length;
-		String hashSalt = hashingSalts[hashIndex1];
+		int hashIndex1 = sessionId.charAt(hashIndex0) % Secrets.hashingSalts.length;
+		String hashSalt = Secrets.hashingSalts[hashIndex1];
 
 		SecretKeySpec secret = new SecretKeySpec(hashSalt.getBytes(), "HmacSha256");
 		try {

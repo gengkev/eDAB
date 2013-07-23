@@ -19,8 +19,9 @@ public class GoogleOAuthClient {
 	// private static final String DEBUG_HOST = "http://localhost:8888";
 	private static final String LOGIN_PATH = "/logincallback";
 
-	private static final String CLIENT_ID = "808214402787.apps.googleusercontent.com";
-	private static final String CLIENT_SECRET = "dj908LVbvrMsHJb0KFZxL1tB";
+	private static final String CLIENT_ID = "67803574749.apps.googleusercontent.com";
+	// ** Moved to Secrets.java **
+	// private static final String CLIENT_SECRET = ...;
 	private static final String SCOPES = "openid profile email";
 
 	/*
@@ -58,7 +59,7 @@ public class GoogleOAuthClient {
 		UriBuilder uri = UriBuilder.fromPath("");
 		uri.queryParam("code", authCode);
 		uri.queryParam("client_id", CLIENT_ID);
-		uri.queryParam("client_secret", CLIENT_SECRET);
+		uri.queryParam("client_secret", Secrets.CLIENT_SECRET);
 		uri.queryParam("redirect_uri", getRedirectURL(host));
 		uri.queryParam("grant_type", "authorization_code");
 		
