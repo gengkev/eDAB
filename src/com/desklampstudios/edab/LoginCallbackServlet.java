@@ -84,7 +84,7 @@ public class LoginCallbackServlet extends HttpServlet {
 
 
 		// Get the user from the datastore
-		User user = ofy().load().type(User.class).id(userData.id).get();
+		User user = ofy().load().type(User.class).id(userData.id).now();
 
 		// user does not exist in the datastore
 		if (user == null) {

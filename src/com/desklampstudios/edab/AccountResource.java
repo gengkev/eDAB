@@ -30,7 +30,7 @@ public class AccountResource {
 
 
 		// now we must actually get the user info
-		User user = ofy().load().type(User.class).id(currentUserId).get();
+		User user = ofy().load().type(User.class).id(currentUserId).now();
 		
 		assert user != null;
 
@@ -62,7 +62,7 @@ public class AccountResource {
 		User providedUser = mapper.readValue(inputStream, User.class);
 		
 		// load user info from db
-		User user = ofy().load().type(User.class).id(currentUserId).get();
+		User user = ofy().load().type(User.class).id(currentUserId).now();
 		
 		// Make sure we're not changing fields we shouldn't be
 		// Also ensures you can't change other people's

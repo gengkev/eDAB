@@ -1,7 +1,6 @@
 package com.desklampstudios.edab;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

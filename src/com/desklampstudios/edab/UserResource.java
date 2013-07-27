@@ -49,10 +49,10 @@ public class UserResource {
 	private User getUserByUsername(String username) {
 		if (username.charAt(0) == '~') {
 			// Try to find by fcps id
-			return ofy().load().type(User.class).filter("fcps_id", username.substring(1)).first().get();
+			return ofy().load().type(User.class).filter("fcps_id", username.substring(1)).first().now();
 		} else {
 			// Try to find by user id
-			return ofy().load().type(User.class).id(username).get();
+			return ofy().load().type(User.class).id(username).now();
 		}
 	}
 }
