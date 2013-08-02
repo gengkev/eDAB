@@ -8,16 +8,16 @@
 	<link rel="canocial" href="https://edab-ds.appspot.com/"/>
 	
 	<title>eDAB</title>
-    <style type="text/css">
-        [ng-cloak] {
-            display: none;
-        }
-    </style>
+	<style type="text/css">
+		[ng-cloak] {
+			display: none;
+		}
+	</style>
 	
 	<!-- Development -->
 	<link rel="stylesheet" href="/lib/bootstrap-2.3.2/bootstrap.css"/>
 	<link rel="stylesheet" href="/lib/bootstrap-2.3.2/bootstrap-responsive.css"/>
-    <link rel="stylesheet" href="/lib/font-awesome-3.2.1/css/font-awesome.css"/>
+	<link rel="stylesheet" href="/lib/font-awesome-3.2.1/css/font-awesome.css"/>
 	<!-- Production
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css"/>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css"/>
@@ -27,23 +27,21 @@
 </head>
 <body ng-controller="AppCtrl">
 	<div class="container">
-		<div id="navbar">
-			<nav>
-				<a itemprop="name" class="brand" href="/">eDAB</a>
-				<ul ng-controller="NavCtrl">
-					<li ng-repeat="page in pages" ng-class="{active: onPage(page.path)}">
-						<a href="{{page.path}}" ng-bind="page.name"></a>
-					</li>
-				</ul>
-			</nav>
-		</div>
+		<nav id="navbar">
+			<a itemprop="name" class="brand" href="/">eDAB</a>
+			<ul id="navlist" ng-controller="NavCtrl">
+				<li ng-repeat="page in pages" ng-class="{onPage: onPage(page)}">
+					<a href="{{page.path}}" ng-bind="page.name"></a>
+				</li>
+			</ul>
+		</nav>
 		
-        <display-error></display-error>
+		<display-error></display-error>
 		
 		<div class="page_content" ng-view></div>
 	</div>
 	
-    <!-- Infobox -->
+	<!-- Infobox -->
 	<div id="infobox-container" fade-in-out="infoboxState()" timeout="1500">
 		<div id="infobox" ng-show="infoboxState()">
 			<display-error></display-error>
@@ -81,13 +79,13 @@
 	
 	<!-- Development -->
 	<script src="/lib/angular-1.0.7/angular.js"></script>
-    <script src="/lib/angular-1.0.7/angular-resource.js"></script>
+	<script src="/lib/angular-1.0.7/angular-resource.js"></script>
 	<!-- Production 
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
 	-->
 	
 	<script src="/app.js"></script>
-    <script src="/utils.js"></script>
+	<script src="/utils.js"></script>
 </body>
 </html>

@@ -4,9 +4,10 @@ angular.module("eDAB-utils", [])
     // hacks to make fading in/out work for login dialog
     .directive("fadeInOut", function ($timeout) {
 		return function (scope, element, attrs) {
-			var doShow = true, isShowing = true,
-			    timeout = parseInt(attrs.timeout, 10) || 2000,
-			    timeoutId;
+			var doShow = true,
+				isShowing = true,
+				timeout = parseInt(attrs.timeout, 10) || 2000,
+				timeoutId;
 			
 			function show() {
 				if (timeoutId) { $timeout.cancel(timeoutId); }
@@ -18,12 +19,13 @@ angular.module("eDAB-utils", [])
 					element[0].style.opacity = "1";
 				}, 0);
 			}
+			
 			function hide() {
 				if (timeoutId) { $timeout.cancel(timeoutId); }
 				
 				element[0].style.transition = (timeout / 1000) + "s ease";
 				element[0].style.opacity = "0";
-				
+
 				timeoutId = $timeout(function () {
 					timeoutId = null;
 					element[0].style.display = "none";
@@ -53,18 +55,25 @@ angular.module("eDAB-utils", [])
 			return func;
 		});
 	})
-    // for displaying error message
-    .directive("displayError", function() {
-        return {
-            restrict: 'E',
-            scope: true,
-            template: '<div class="alert alert-error" ng-show="getErrorMsg()">'
-                + '<b>Error:</b> {{getErrorMsg()}}<br/>'
-                + '<small>More info available in the console. Contact developer for assistance.</small>'
-                + '</div>'
-        };
-    })
-    .run(function($window) {
+	// for displaying error message
+	.directive("displayError", function() {
+		return {
+			restrict: 'E',
+			scope: true,
+			template: '<div class="alert alert-error" ng-show="getErrorMsg()">' +'<b>Error:</b> {{getErrorMsg()}}<br/>' +
+				'<small>More info available in the console. Contact developer for assistance.</small>' +
+				'</div>'
+		};
+	})
+	.service('Utils', function($window) {
+		this.loadGPlusBadge = function() {
+			if ($window.gapi) {
+				$window.gapi.page.go('aboutEdab');
+				$window.gapi.person.go('aboutEdab');
+			}
+		};
+	})
+    .run(function($window, Utils) {
 		// uhh kind of complicated
 		// we'll fix it eventually with a real loader
 		var loadScript = (function(d, t) {
@@ -80,15 +89,14 @@ angular.module("eDAB-utils", [])
 		// Google Analytics snippet
 		$window._gaq = [['_setAccount', 'UA-19517403-4'], ['_trackPageview']];
 		loadScript('//www.google-analytics.com/ga.js');
-		
+
 		// Google+ badge setup
 		$window.___gcfg = {
 			lang: 'en-US',
 			parsetags: 'explicit'
 		};
-		loadScript('https://apis.google.com/js/plusone.js').onload = function() {
-			// later this needs to be in a Utils service
-			$window.gapi.page.go('aboutEdab');
-			$window.gapi.person.go('aboutEdab');
+		
+		loadScript('https://apis.google.com/js/plusone.js').onload = function () {
+			Utils.loadGPlusBadge();
 		};
 	});

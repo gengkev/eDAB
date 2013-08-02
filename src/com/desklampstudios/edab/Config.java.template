@@ -1,0 +1,14 @@
+package com.desklampstudios.edab;
+
+class Config {
+	// Please replace with a client id and secret from a Google APIs Console account.
+	// I believe one is created automatically after registering an App Engine account.
+	static final String CLIENT_ID = "insert client id";
+	static final String CLIENT_SECRET = "insert client secret";
+	
+	// This is mainly because I wanted to include a bunch of random strings for no reason.
+	// See Utils.java for the implementation, which is probably not the best idea. But whatever :D
+	static final String[] hashingSalts = {
+		"insert as many strings as you like"
+	};
+}

@@ -172,8 +172,8 @@ public class Utils {
 
 		// do some weird stuff and select a hashing salt to use
 		int hashIndex0 = sessionId.charAt(0) % sessionId.length();
-		int hashIndex1 = sessionId.charAt(hashIndex0) % Secrets.hashingSalts.length;
-		String hashSalt = Secrets.hashingSalts[hashIndex1];
+		int hashIndex1 = sessionId.charAt(hashIndex0) % Config.hashingSalts.length;
+		String hashSalt = Config.hashingSalts[hashIndex1];
 
 		SecretKeySpec secret = new SecretKeySpec(hashSalt.getBytes(), "HmacSha256");
 		try {

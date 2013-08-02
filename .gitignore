@@ -1,4 +1,6 @@
+*.class
+
 .settings
 war/WEB-INF/classes/*
 war/WEB-INF/appengine-generated/local_db.bin
-src/com/desklampstudios/edab/Secrets.java
+src/com/desklampstudios/edab/Config.java

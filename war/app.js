@@ -115,14 +115,14 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 		}
 	};
 	
-	
-})
+});
+
 app.run(function(appService, $rootScope) {
 	appService.auth.check();
 	
 	$rootScope.$watch(function() { return appService.auth.logged_in; }, function(newVal) {
 		$rootScope.$broadcast("loginStateChange", newVal);
-	})
+	});
 });
 
 
@@ -144,8 +144,8 @@ function AppCtrl($scope, appService, $exceptionHandler) {
 }
 
 function NavCtrl($scope, $location) {
-	$scope.onPage = function(path) {
-		return $location.path == path;
+	$scope.onPage = function(page) {
+		return $location.path() == page.path;
 	};
 	
 	$scope.pages = [
@@ -165,7 +165,7 @@ function CalendarCtrl($scope, $location, appService) {
 function CoursesCtrl($scope, $location, appService) {
 }
 
-function SettingsCtrl($scope, $location, appService, $window) {	
+function SettingsCtrl($scope, $location, appService, $window, Utils) {	
 	$scope.service = appService;
 	$scope.user = angular.copy(appService.auth.user);
 	
@@ -212,10 +212,7 @@ function SettingsCtrl($scope, $location, appService, $window) {
 	});
 	
 	// Initialize Google+ badge
-	if ($window.gapi) {
-		$window.gapi.page.go('aboutEdab');
-		$window.gapi.person.go('aboutEdab');
-	}
+	Utils.loadGPlusBadge();
 }
 
 function UserCtrl($scope, $routeParams, $http, $location, appService) {

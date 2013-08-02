@@ -14,13 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
 
-	// private static final String SERVER_HOST = "https://edab-ds.appspot.com";
-	// private static final String DEBUG_HOST = "http://localhost:8888";
 	private static final String LOGIN_PATH = "/logincallback";
-
-	private static final String CLIENT_ID = "67803574749.apps.googleusercontent.com";
-	// ** Moved to Secrets.java **
-	// private static final String CLIENT_SECRET = ...;
 	private static final String SCOPES = "openid profile email";
 
 	/*
@@ -44,7 +38,7 @@ public class GoogleOAuthClient {
 	protected static String getEndpointURL(String host, String csrfToken) {
 		UriBuilder uri = UriBuilder.fromUri("https://accounts.google.com/o/oauth2/auth");
 		uri.queryParam("response_type", "code");
-		uri.queryParam("client_id", CLIENT_ID);
+		uri.queryParam("client_id", Config.CLIENT_ID);
 		uri.queryParam("redirect_uri", getRedirectURL(host));
 		uri.queryParam("scope", SCOPES);
 		uri.queryParam("hd", "fcpsschools.net");
@@ -57,8 +51,8 @@ public class GoogleOAuthClient {
 		// Open the connection to the access token thing
 		UriBuilder uri = UriBuilder.fromPath("");
 		uri.queryParam("code", authCode);
-		uri.queryParam("client_id", CLIENT_ID);
-		uri.queryParam("client_secret", Secrets.CLIENT_SECRET);
+		uri.queryParam("client_id", Config.CLIENT_ID);
+		uri.queryParam("client_secret", Config.CLIENT_SECRET);
 		uri.queryParam("redirect_uri", getRedirectURL(host));
 		uri.queryParam("grant_type", "authorization_code");
 		
