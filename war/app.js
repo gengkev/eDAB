@@ -3,15 +3,16 @@
 var app = angular.module('eDAB-app', ['eDAB-utils']);
 
 app.config(function($routeProvider, $locationProvider) {
+		$locationProvider.html5Mode(true);
+		$locationProvider.hashPrefix("");
+        	
 		$routeProvider
 			.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
 			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
-			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
+			.when('/mycourses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
 			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
 			.when('/u/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
 			.otherwise({redirectTo: '/agenda'});
-		
-		$locationProvider.html5Mode(true);
 	});
 
 // This needs to be cleaned up. Big time.
@@ -151,7 +152,7 @@ function NavCtrl($scope, $location) {
 	$scope.pages = [
 		{name: 'Agenda'  , path: '/agenda'  },
 		{name: 'Calendar', path: '/calendar'},
-		{name: 'Courses' , path: '/courses' },
+		{name: 'Courses' , path: '/mycourses' },
 		{name: 'Settings', path: '/settings'}
 	];
 }
@@ -163,6 +164,7 @@ function CalendarCtrl($scope, $location, appService) {
 }
 
 function CoursesCtrl($scope, $location, appService) {
+    
 }
 
 function SettingsCtrl($scope, $location, appService, $window, Utils) {	

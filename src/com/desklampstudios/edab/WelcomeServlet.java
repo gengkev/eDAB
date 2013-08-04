@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WelcomeServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		resp.sendRedirect("/#" + req.getRequestURI());
+		resp.setStatus(302);
+		resp.setHeader("Location", "/#" + req.getRequestURI());
 	}
 }
