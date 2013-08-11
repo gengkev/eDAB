@@ -18,4 +18,9 @@ public class Course {
 	// String bb_long_id;
 	@Load @Index List<Ref<User>> instructors;
 	// @Load @Index Ref<Semester> semester;
+	
+	@Override
+	public String toString() {
+		return "Course object; id=" + id + ", name=" + name;
+	}
 }

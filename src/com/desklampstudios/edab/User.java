@@ -43,6 +43,6 @@ public class User {
 	
 	@Override
 	public String toString() {
-		return "User object; name: " + name + ", id: " + id + ", fcps_id: " + fcps_id;
+		return "User object; name=" + name + ", id=" + id + ", fcps_id=" + fcps_id;
 	}
 }

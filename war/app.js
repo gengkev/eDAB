@@ -3,6 +3,9 @@
 var app = angular.module('eDAB-app', ['eDAB-utils']);
 
 app.config(function($routeProvider, $locationProvider) {
+		$locationProvider.html5Mode(true);
+		$locationProvider.hashPrefix("");
+        	
 		$routeProvider
 			.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
 			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
@@ -165,6 +168,7 @@ function CalendarCtrl($scope, $location, appService) {
 }
 
 function CoursesCtrl($scope, $location, appService) {
+    
 }
 
 function SettingsCtrl($scope, $location, appService, $window, Utils) {	
