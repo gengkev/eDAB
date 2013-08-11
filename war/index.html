@@ -43,7 +43,7 @@
 	</div>
 	
 	<!-- Infobox -->
-	<div id="infobox-container" fade-in-out="infoboxState()" timeout="1500">
+	<div id="infobox-container" ng-show="infoboxState()" ng-animate="'fade'">
 		<div id="infobox" ng-show="infoboxState()">
 			<display-error></display-error>
 			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
@@ -67,11 +67,8 @@
 					</p>
 				</details>
 			</section>
-			<section id="infobox-loading" ng-show="infoboxState() == 'loading'">
-				<p>
-					<i class="icon-spinner icon-spin"></i>
-					&nbsp;Please wait, loading...
-				</p>
+			<section class="infobox-message" ng-hide="infoboxState() != 'loading'">
+				<i class="icon-spinner icon-spin icon-large"></i>
 			</section>
 		</div>
 	</div>

@@ -88,7 +88,9 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 			$window.open("/login?close", "login");
 			
 			$window.loginCallback = function() {
-				self.auth.check();
+				$rootScope.$apply(function() { // get inside angular lifecycle or whatnot
+					self.auth.check();
+				});
 			};
 		},
 			
@@ -108,7 +110,7 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 				url: "/rest/account/currentUser"
 			})
 			.then(self._reqHandler.success, self._reqHandler.error)
-			.then(function(response) {				
+			.then(function(response) {
 				console.log("Loaded user. Response:", response);
 				self.auth.user = response.data;
 			});

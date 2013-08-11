@@ -125,15 +125,17 @@ body {
 	margin: 30px 10px;
 	text-align: center;
 }
+.infobox-message h3 {
+	font-weight: normal;
+	display: inline;
+}
+
 @media only screen and (max-width: 780px) {
 	#infobox {
 		/* if we can fit it, a 640px box; below that, fluid width */
 		width: auto;
 		margin: 10px;
 	}
-}
-#infobox-loading {
-	font-size: 24px;
 }
 /*
 #error {
@@ -144,7 +146,8 @@ body {
 	padding: 5px 10px;
 	z-index: 4;
 	border-radius: 0 0 5px 5px;
-}*/
+}
+*/
 
 .preserve-whitespace {
 	white-space: pre-line;
@@ -153,4 +156,18 @@ body {
 #gplus_badge {
 	float: left;
 	margin-right: 5px;
+}
+
+.fade-show, .fade-hide {
+	-webkit-transition: 1s linear all;
+	   -moz-transition: 1s linear all;
+	    -ms-transition: 1s linear all;
+	     -o-transition: 1s linear all;
+	        transition: 1s linear all;
+}
+.fade-show, .fade-hide.fade-hide-active {
+	opacity: 0;
+}
+.fade-show.fade-show-active, .fade-hide {
+	opacity: 1;
 }
