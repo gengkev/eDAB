@@ -1,49 +1,6 @@
 "use strict";
 
 angular.module("eDAB-utils", [])
-    // hacks to make fading in/out work for login dialog
-    .directive("fadeInOut", function ($timeout) {
-		return function (scope, element, attrs) {
-			var doShow = true,
-				isShowing = true,
-				timeout = parseInt(attrs.timeout, 10) || 2000,
-				timeoutId;
-			
-			function show() {
-				if (timeoutId) { $timeout.cancel(timeoutId); }
-				
-				element[0].style.transition = (timeout / 1000) + "s ease";
-				element[0].style.display = "block";
-				
-				$timeout(function () {
-					element[0].style.opacity = "1";
-				}, 0);
-			}
-			
-			function hide() {
-				if (timeoutId) { $timeout.cancel(timeoutId); }
-				
-				element[0].style.transition = (timeout / 1000) + "s ease";
-				element[0].style.opacity = "0";
-
-				timeoutId = $timeout(function () {
-					timeoutId = null;
-					element[0].style.display = "none";
-				}, timeout);
-			}
-			
-			scope.$watch(attrs.fadeInOut, function (value) {
-				var newDoShow = !!value;
-				// console.log("newDoShow", newDoShow);
-				if (newDoShow !== doShow) {
-					if (newDoShow) { show(); }
-					else { hide(); }
-					
-					doShow = newDoShow;
-				}
-			});
-		};
-	})
 	.config(function($provide, $httpProvider) {
 		// display angularjs exceptions
 		$provide.decorator("$exceptionHandler", function($delegate) {
@@ -73,7 +30,7 @@ angular.module("eDAB-utils", [])
 			}
 		};
 	})
-    .run(function($window, Utils) {
+	.run(function($window, Utils) {
 		// uhh kind of complicated
 		// we'll fix it eventually with a real loader
 		var loadScript = (function(d, t) {
