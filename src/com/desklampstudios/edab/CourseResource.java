@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 
-@Path("/course")
+@Path("/courses")
 @Consumes("application/json")
 @Produces("application/json")
 public class CourseResource {
@@ -70,12 +70,9 @@ public class CourseResource {
 	}
 	
 	@GET @Path("/{courseId}")
-	public Response getCourse(@PathParam("courseId") String courseId) throws JsonProcessingException {
-		
-		Long courseIdL = Long.parseLong(courseId);
-		
+	public Response getCourse(@PathParam("courseId") Long courseId) throws JsonProcessingException {
 		// get from db
-		Course course = ofy().load().type(Course.class).id(courseIdL).now();
+		Course course = ofy().load().type(Course.class).id(courseId).now();
 		
 		// convert to json
 		String json = new ObjectMapper().writeValueAsString(course);

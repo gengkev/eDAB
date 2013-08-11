@@ -224,7 +224,7 @@ function SettingsCtrl($scope, $location, appService, $window, Utils) {
 function CourseListCtrl($scope, $location, $http, appService) {
 	$http({
 		method: "GET",
-		url: "/rest/course"
+		url: "/rest/courses"
 	})
 	.then(function(response) {
 		console.log("Loaded course list: ", response);
@@ -237,12 +237,12 @@ function CourseListCtrl($scope, $location, $http, appService) {
     $scope.newCourse = function() {
 		$http({
 			method: "POST",
-			url: "/rest/course",
+			url: "/rest/courses",
 			data: ""
 		})
 		.then(function(response) {
 			var id = response.data.id;
-			$location.path("/c/" + id);
+			$location.path("/courses/" + id + "/edit");
 		}, function(response) {
 			// idk
 			appService._reqHandler.error(response);
@@ -254,7 +254,7 @@ function CourseCtrl($scope, $http, $routeParams, $location, appService) {
 	var courseId = $routeParams.courseId;
 	$http({
 		method: "GET",
-		url: "/rest/course/" + courseId
+		url: "/rest/courses/" + courseId
 	})
 	.then(function(response) {
 		console.log("Loaded course: ", response);
@@ -265,7 +265,7 @@ function CourseCtrl($scope, $http, $routeParams, $location, appService) {
 	});
 	
 	$scope.edit = function() {
-		$location.path("/c/" + courseId + "/edit");
+		$location.path("/courses/" + courseId + "/edit");
 	};
 }
 
@@ -273,7 +273,7 @@ function CourseEditCtrl($scope, $http, $routeParams, appService) {
 	var courseId = $routeParams.courseId;
 	$http({
 		method: "GET",
-		url: "/rest/course/" + courseId
+		url: "/rest/courses/" + courseId
 	})
 	.then(function(response) {
 		console.log("Loaded course: ", response);
@@ -288,7 +288,7 @@ function UserCtrl($scope, $routeParams, $http, $location, appService) {
 	var username = $routeParams.username;
 	$http({
 		method: "GET",
-		url: "/rest/user/" + username
+		url: "/rest/users/" + username
 	})
 	.then(function(response) {
 		console.log("Loaded user: ", response);
