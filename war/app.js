@@ -11,7 +11,7 @@ app.config(function($routeProvider, $locationProvider) {
 			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
 			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
 			.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
-			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
+			.when('/courses', {controller: CourseListCtrl, templateUrl: '/partials/course_list.html'})
 			.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course.html'})
 			.when('/courses/:courseId/edit', {controller: CourseEditCtrl, templateUrl: '/partials/course_edit.html'})
 			.otherwise({redirectTo: '/agenda'});
@@ -282,6 +282,10 @@ function CourseEditCtrl($scope, $http, $routeParams, appService) {
 		// ...
 		appService._reqHandler.error(response);
 	});
+	
+	$scope.edit = function() {
+		$location.path("/courses/" + courseId + "/edit");
+	};
 }
 
 function UserCtrl($scope, $routeParams, $http, $location, appService) {
