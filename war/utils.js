@@ -1,8 +1,8 @@
 "use strict";
 
 angular.module("eDAB-utils", [])
-    // hacks to make fading in/out work for login dialog
-    .directive("fadeInOut", function ($timeout) {
+	// hacks to make fading in/out work for login dialog
+	.directive("fadeInOut", function ($timeout) {
 		return function (scope, element, attrs) {
 			var doShow = true,
 				isShowing = true,
@@ -73,7 +73,7 @@ angular.module("eDAB-utils", [])
 			}
 		};
 	})
-    .run(function($window, Utils) {
+	.run(function($window, Utils) {
 		// uhh kind of complicated
 		// we'll fix it eventually with a real loader
 		var loadScript = (function(d, t) {
