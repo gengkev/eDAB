@@ -11,7 +11,7 @@ app.config(function($routeProvider, $locationProvider) {
 			.when('/u/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
 			.otherwise({redirectTo: '/agenda'});
 		
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode(true).hashPrefix("");
 	});
 
 // This needs to be cleaned up. Big time.
