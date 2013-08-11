@@ -8,7 +8,7 @@ app.config(function($routeProvider, $locationProvider) {
 			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
 			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
 			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
-			.when('/u/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
+			.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
 			.otherwise({redirectTo: '/agenda'});
 		
 		$locationProvider.html5Mode(true).hashPrefix("");
@@ -127,9 +127,16 @@ app.run(function(appService, $rootScope) {
 	});
 });
 
+function AppCtrl($scope, $exceptionHandler) {
+	$scope.getErrorMsg = function() {
+		return $exceptionHandler.errorMsg;
+	};
+}
 
-function AppCtrl($scope, appService, $exceptionHandler) {
-	$scope.service = appService;
+function InfoboxCtrl($scope, appService, $exceptionHandler) {
+	$scope.login = function() {
+		appService.auth.login();
+	};
 	
 	$scope.infoboxState = function() {
 		if (appService.auth.logged_in === false) {
@@ -139,23 +146,16 @@ function AppCtrl($scope, appService, $exceptionHandler) {
 		}
 		return false;
 	};
-	
-	$scope.getErrorMsg = function() {
-		return $exceptionHandler.errorMsg;
-	};
 }
 
-function NavCtrl($scope, $location) {
-	$scope.onPage = function(page) {
-		return $location.path() == page.path;
+function NavCtrl($scope, $location, appService) {
+	$scope.getName = function() {
+		return appService.auth.user && appService.auth.user.name;
 	};
 	
-	$scope.pages = [
-		{name: 'Agenda'  , path: '/agenda'  },
-		{name: 'Calendar', path: '/calendar'},
-		{name: 'Courses' , path: '/courses' },
-		{name: 'Settings', path: '/settings'}
-	];
+	$scope.onPage = function(path) {
+		return $location.path() == path;
+	};
 }
 
 function AgendaCtrl($scope, $location, appService) {

@@ -31,19 +31,40 @@
 		<nav id="navbar">
 			<a itemprop="name" class="brand" href="/">eDAB</a>
 			<ul id="navlist" ng-controller="NavCtrl">
-				<li ng-repeat="page in pages" ng-class="{onPage: onPage(page)}">
-					<a href="{{page.path}}" ng-bind="page.name"></a>
+				<li ng-class="{onPage: onPage('/agenda')}">
+					<a href="/agenda">
+						<i class="icon-book"></i>
+						Agenda
+					</a>
+				</li>
+				<li ng-class="{onPage: onPage('/calendar')}">
+					<a href="/calendar">
+						<i class="icon-calendar"></i>
+						Calendar
+					</a>
+				</li>
+				<li ng-class="{onPage: onPage('/courses')}">
+					<a href="/courses">
+						<i class="icon-list"></i>
+						Courses
+					</a>
+				</li>
+				<li ng-class="{onPage: onPage('/settings')}" class="pull-right">
+					<a href="/settings">
+						<i class="icon-user"></i>
+						{{getName() || "Not logged in"}}
+					</a>
 				</li>
 			</ul>
 		</nav>
 		
 		<display-error></display-error>
 		
-		<div class="page_content" ng-view></div>
+		<div class="page_content" ng-view="" ng-animate="{enter: 'fade-in'}"></div>
 	</div>
 	
 	<!-- Infobox -->
-	<div id="infobox-container" ng-show="infoboxState()" ng-animate="'fade'">
+	<div id="infobox-container" ng-controller="InfoboxCtrl" ng-show="infoboxState()" ng-animate="{show: 'fade-in', hide: 'fade-out'}">
 		<div id="infobox" ng-show="infoboxState()">
 			<display-error></display-error>
 			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
@@ -52,7 +73,7 @@
 					eDAB can help you organize your schedule bla bla bla.
 				</p>
 				<p>
-					<button class="btn-signin" ng-click="service.auth.login()">
+					<button class="btn-signin" ng-click="login()">
 						<!--img src="fcps.png" width="37.5" height="32" alt="FCPS"/-->
 						Sign in with your fcpsschools.net account
 					</button>

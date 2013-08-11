@@ -28,9 +28,9 @@
 		</div>
 		
 		<div class="control-group">
-			<label class="control-label">URL</label>
+			<label class="control-label">Public URL</label>
 			<div class="controls">
-				<a href="/u/~{{user.fcps_id}}">edab-ds.appspot.com/u/~{{user.fcps_id}}</a>
+				<a href="/users/~{{user.fcps_id}}">edab-ds.appspot.com/users/~{{user.fcps_id}}</a>
 			</div>
 		</div>
 	</form>
@@ -106,7 +106,10 @@
 <fieldset>
 	<legend>Sign out</legend>
 	<p>
-		<button class="btn btn-danger" ng-click="service.auth.logout()">Sign out and revoke tokens</button>
+		<button class="btn btn-danger" ng-click="service.auth.logout()">
+			<i class="icon-signout"></i>
+			Sign out and revoke tokens
+		</button>
 	</p>
 </fieldset>
 

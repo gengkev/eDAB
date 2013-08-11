@@ -58,7 +58,7 @@ body {
 }
 
 #navlist {
-	display: inline-block;
+	display: inline;
 	padding: 0;
 	margin: 0;
 }
@@ -74,6 +74,11 @@ body {
 	margin: 0 4px;
 	padding: 6px 8px;
 	font-size: 16px;
+	
+	-webkit-transition: 0.1s linear all;
+	   -moz-transition: 0.1s linear all;
+	     -o-transition: 0.1s linear all;
+	        transition: 0.1s linear all;
 }
 #navlist > li.onPage > a, #navlist > li:hover > a, #navlist > li:focus > a, #navlist > li:active > a {
 	background-color: hsl(0, 0%, 87%);
@@ -158,16 +163,15 @@ body {
 	margin-right: 5px;
 }
 
-.fade-show, .fade-hide {
-	-webkit-transition: 1s linear all;
-	   -moz-transition: 1s linear all;
-	    -ms-transition: 1s linear all;
-	     -o-transition: 1s linear all;
-	        transition: 1s linear all;
+.fade-in, .fade-out {
+	-webkit-transition: 0.75s ease all;
+	   -moz-transition: 0.75s ease all;
+	     -o-transition: 0.75s ease all;
+	        transition: 0.75s ease all;
 }
-.fade-show, .fade-hide.fade-hide-active {
+.fade-in, .fade-out.fade-out-active {
 	opacity: 0;
 }
-.fade-show.fade-show-active, .fade-hide {
+.fade-in.fade-in-active, .fade-out {
 	opacity: 1;
 }

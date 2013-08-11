@@ -12,8 +12,8 @@ Right now, eDAB is being developed as a web app, hopefully responsive to a certa
 ![An early mock-up of eDAB from January 2013](https://docs.google.com/drawings/d/1nV0ClG9MEMLFkj039nbWbxTTDDp9VwdwuN1XO-Abl7A/pub?w=1499&amp;h=1097)
 An early mock-up of eDAB from January 2013
 
-## Technical Overview ##
-eDAB, on the client side, is a [single-page application](http://en.wikipedia.org/wiki/Single-page_application), thanks to the help of [Angular.js](http://angularjs.org). This means it never reloads; it retrieves all data via Ajax (which is really a terrible, overused buzzword). It also uses [Bootstrap](http://getbootstrap.com) because I'm not a master designer. The server is built on  Google's App Engine platform, which probably isn't good because of lock-in. It manages database interactions with [Objectify](https://code.google.com/p/objectify-appengine/), and the data is marshalled into JSON with the help of [Jackson](https://github.com/FasterXML/jackson). Finally, it's transferred to the client via a REST-like API powered by [Jersey](http://jersey.java.net).
+## Technical Overview / Credits ##
+eDAB, on the client side, is a [single-page application](http://en.wikipedia.org/wiki/Single-page_application), thanks to the help of [Angular.js](http://angularjs.org). This means it never reloads; it retrieves all data via Ajax (which is really a terrible, overused buzzword). It also uses [Bootstrap](http://getbootstrap.com) with [Font Awesome](http://fontawesome.github.io) because I'm not a master designer. The server is built on  Google's App Engine platform, which probably isn't good because of lock-in. It manages database interactions with [Objectify](https://code.google.com/p/objectify-appengine/), and the data is marshalled into JSON with the help of [Jackson](https://github.com/FasterXML/jackson). Finally, it's transferred to the client via a REST-like API powered by [Jersey](http://jersey.java.net).
 
 ## Contributing ##
 
