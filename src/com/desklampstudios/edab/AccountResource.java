@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AccountResource {	
 
 	@GET @Path("/currentUser")
-	public Response getCurrentUserData(@Context HttpServletRequest req, @Context HttpServletResponse resp) {
+	public Response getCurrentUser(@Context HttpServletRequest req, @Context HttpServletResponse resp) {
 		// NotLoggedIn or InvalidSession sent to client
 		String currentUserId = AccountService.checkLogin(req, resp);
 
@@ -52,17 +52,19 @@ public class AccountResource {
 	}
 
 	@PUT @Path("/currentUser")
-	public Response setCurrentUserData(@Context HttpServletRequest req, @Context HttpServletResponse resp) throws IOException {
+	public Response setCurrentUser(
+			@Context HttpServletRequest req,
+			@Context HttpServletResponse resp) throws IOException {
+		
 		// NotLoggedIn or InvalidSession sent to client
 		String currentUserId = AccountService.checkLogin(req, resp);
 		
-		// get provided user object
-		InputStream inputStream = req.getInputStream();
-		ObjectMapper mapper = new ObjectMapper();
-		User providedUser = mapper.readValue(inputStream, User.class);
-		
 		// load user info from db
 		User user = ofy().load().type(User.class).id(currentUserId).now();
+		
+		// get provided user object
+		InputStream inputStream = req.getInputStream();
+		User providedUser = new ObjectMapper().readValue(inputStream, User.class);
 		
 		// Make sure we're not changing fields we shouldn't be
 		// Also ensures you can't change other people's

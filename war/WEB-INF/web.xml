@@ -41,20 +41,17 @@
 	</servlet-mapping>
 	<servlet-mapping>
 	    <servlet-name>Welcome</servlet-name>
-	    <url-pattern>/courses</url-pattern>
+	    <url-pattern>/settings</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 	    <servlet-name>Welcome</servlet-name>
-	    <url-pattern>/settings</url-pattern>
+	    <url-pattern>/courses/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 	    <servlet-name>Welcome</servlet-name>
 	    <url-pattern>/users/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-	    <servlet-name>Welcome</servlet-name>
-	    <url-pattern>/welcome</url-pattern>
-	</servlet-mapping>
+	
 	<servlet>
 	    <servlet-name>Welcome</servlet-name>
 	    <servlet-class>com.desklampstudios.edab.WelcomeServlet</servlet-class>

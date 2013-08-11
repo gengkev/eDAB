@@ -10,13 +10,14 @@ import com.googlecode.objectify.annotation.Load;
 
 @Entity
 public class Course {
-	@Id long id;
-	@Index String name;
-	String longName;
+	public @Id Long id;
+	public @Index String name;
+	public String longName;
 	// String fcps_id;
-	String bb_id;
+	public String bb_id;
 	// String bb_long_id;
 	@Load @Index List<Ref<User>> instructors;
+	@Load List<Ref<User>> users;
 	// @Load @Index Ref<Semester> semester;
 	
 	@Override

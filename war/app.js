@@ -9,9 +9,11 @@ app.config(function($routeProvider, $locationProvider) {
 		$routeProvider
 			.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
 			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
-			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
 			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
 			.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
+			.when('/courses', {controller: CoursesCtrl, templateUrl: '/partials/courses.html'})
+			.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course.html'})
+			.when('/courses/:courseId/edit', {controller: CourseEditCtrl, templateUrl: '/partials/course_edit.html'})
 			.otherwise({redirectTo: '/agenda'});
 		
 		$locationProvider.html5Mode(true).hashPrefix("");
@@ -167,10 +169,6 @@ function AgendaCtrl($scope, $location, appService) {
 function CalendarCtrl($scope, $location, appService) {
 }
 
-function CoursesCtrl($scope, $location, appService) {
-    
-}
-
 function SettingsCtrl($scope, $location, appService, $window, Utils) {	
 	$scope.service = appService;
 	$scope.user = angular.copy(appService.auth.user);
@@ -213,7 +211,9 @@ function SettingsCtrl($scope, $location, appService, $window, Utils) {
 		$scope.user = angular.copy(appService.auth.user);
 	};
 	
-	$scope.$watch("appService.auth.user", function() {
+	$scope.$watch(function() {
+		return appService.auth.user;
+	}, function() {
 		$scope.reset();
 	});
 	
@@ -221,11 +221,74 @@ function SettingsCtrl($scope, $location, appService, $window, Utils) {
 	Utils.loadGPlusBadge();
 }
 
+function CourseListCtrl($scope, $location, $http, appService) {
+	$http({
+		method: "GET",
+		url: "/rest/course"
+	})
+	.then(function(response) {
+		console.log("Loaded course list: ", response);
+		$scope.courses = response.data;
+	}, function(response) {
+		// ...
+		appService._reqHandler.error(response);
+	});	
+	
+    $scope.newCourse = function() {
+		$http({
+			method: "POST",
+			url: "/rest/course",
+			data: ""
+		})
+		.then(function(response) {
+			var id = response.data.id;
+			$location.path("/c/" + id);
+		}, function(response) {
+			// idk
+			appService._reqHandler.error(response);
+		});
+	};
+}
+
+function CourseCtrl($scope, $http, $routeParams, $location, appService) {
+	var courseId = $routeParams.courseId;
+	$http({
+		method: "GET",
+		url: "/rest/course/" + courseId
+	})
+	.then(function(response) {
+		console.log("Loaded course: ", response);
+		$scope.course = response.data;
+	}, function(response) {
+		// ...
+		appService._reqHandler.error(response);
+	});
+	
+	$scope.edit = function() {
+		$location.path("/c/" + courseId + "/edit");
+	};
+}
+
+function CourseEditCtrl($scope, $http, $routeParams, appService) {
+	var courseId = $routeParams.courseId;
+	$http({
+		method: "GET",
+		url: "/rest/course/" + courseId
+	})
+	.then(function(response) {
+		console.log("Loaded course: ", response);
+		$scope.course = response.data;
+	}, function(response) {
+		// ...
+		appService._reqHandler.error(response);
+	});
+}
+
 function UserCtrl($scope, $routeParams, $http, $location, appService) {
 	var username = $routeParams.username;
 	$http({
 		method: "GET",
-		url: "/rest/users/" + username
+		url: "/rest/user/" + username
 	})
 	.then(function(response) {
 		console.log("Loaded user: ", response);
@@ -233,10 +296,10 @@ function UserCtrl($scope, $routeParams, $http, $location, appService) {
 	}, function(response) {
 		if (response.status == 404) {
 			alert("User not found!");
-			$location.path("/");
-		} else {
-			// uh idk
-			appService._reqHandler.error(response);
+			return;
 		}
+		
+		// uh idk
+		appService._reqHandler.error(response);
 	});
 }

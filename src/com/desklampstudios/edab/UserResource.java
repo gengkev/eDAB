@@ -12,26 +12,20 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Path("/users")
+@Path("/user")
 @Consumes("application/json")
 @Produces("application/json")
 public class UserResource {
 	
 	@GET @Path("/{username}")
-	public Response getUser(@PathParam("username") String username) {
+	public Response getUser(@PathParam("username") String username) throws JsonProcessingException {
 		User user = getUserByUsername(username);
 		if (user == null) {
 			throw new eDABException.NotFoundException("The specified user could not be found");
 		}
 		
 		// convert into json
-		ObjectMapper mapper = new ObjectMapper();
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(user);
-		} catch (JsonProcessingException e) {
-			throw new eDABException.InternalServerException(e.toString());
-		}
+		String json = new ObjectMapper().writeValueAsString(user);
 
 		return Response.ok(Utils.JsonPad + json).build();
 	}
