@@ -1,23 +1,32 @@
-<fieldset>
-	<legend>About me</legend>
-	<form class="form-horizontal">
-		<div class="control-group">
-			<label class="control-label">Name</label>
-			<div class="controls">
-				{{user.name}}
+<div>
+	<div class="page-header">
+		<h1>Settings</h1>
+	</div>
+	
+	<h3>About me</h3>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Name</label>
+			<div class="col-lg-10">
+				<p class="form-control-static">
+					{{user.name}}
+					&nbsp;
+					<span style="display:inline-block">
+						<a href="" ng-click="nameChangeRequest()">Request change</a>
+					</span>
+				</p>
 				<!-- <input type="text" ng-model="user.name" readonly="readonly" /> -->
-				&nbsp;
-				<div style="display:inline-block">
-					<a href="" ng-click="nameChangeRequest()">Request change</a>
-				</div>
+				
 			</div>
 		</div>
 		
-		<div class="control-group">
-			<label class="control-label">Student ID</label>
-			<div class="controls">
-				{{user.fcps_id}}
-				<span class="muted">@fcpsschools.net</span>
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Student ID</label>
+			<div class="col-lg-10">
+				<p class="form-control-static">
+					{{user.fcps_id}}
+					<span class="muted">@fcpsschools.net</span>
+				</p>
 				<!--
 				<div class="input-append">
 					<input type="text" class="input-mini" ng-model="user.fcps_id" disabled="disabled" />
@@ -27,103 +36,91 @@
 			</div>
 		</div>
 		
-		<div class="control-group">
-			<label class="control-label">Public URL</label>
-			<div class="controls">
-				<a href="/users/~{{user.fcps_id}}">edab-ds.appspot.com/users/~{{user.fcps_id}}</a>
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Public URL</label>
+			<div class="col-lg-10">
+				<p class="form-control-static">
+					<a href="/users/~{{user.fcps_id}}">edab-ds.appspot.com/users/~{{user.fcps_id}}</a>
+				</p>
 			</div>
 		</div>
 	</form>
-</fieldset>
-
-<fieldset>
-	<legend>Edit profile</legend>
-	<form class="form-horizontal">
-		<div class="control-group">
-			<label class="control-label">Gender</label>
-			<div class="controls">
-				<label class="radio inline">
+	
+	<h3>Edit profile</h3>
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Gender</label>
+			<div class="col-lg-4">
+				<label class="radio-inline">
 					<input type="radio" ng-model="user.gender" name="gender" value="male" />
 					Male
 				</label>
-				<label class="radio inline">
+				<label class="radio-inline">
 					<input type="radio" ng-model="user.gender" name="gender" value="female" />
 					Female
 				</label>
-				<label class="radio inline">
+				<label class="radio-inline">
 					<input type="radio" ng-model="user.gender" name="gender" value="other" />
 					Other
 				</label>
 			</div>
 		</div>
 		
-		<div class="control-group">
-			<label class="control-label">School</label>
-			<div class="controls">
-				<select disabled="disabled" ng-model="user.school" ng-options="s.name for s in schools">
+		<div class="form-group">
+			<label class="col-lg-2 control-label">School</label>
+			<div class="col-lg-4">
+				<select class="form-control" disabled="disabled" ng-model="user.school" ng-options="s.name for s in schools">
 					<option value=""></option>
 				</select>
 			</div>
 		</div>
 		
-		<!--
-		<div class="control-group">
-			<label class="control-label">Team</label>
-			<div class="controls">
-				<select disabled="disabled" ng-model="user.team" ng-options="(t.letter+' ('+t.name+')') group by t.grade for t in teams">
-					<option value=""></option>
-				</select>
-			</div>
-		</div>
-		-->
-		
-		<div class="control-group">
-			<label class="control-label">Biography</label>
-			<div class="controls">
-				<textarea ng-model="user.bio" class="input-xlarge"></textarea>
+		<div class="form-group">
+			<label class="col-lg-2 control-label">Biography</label>
+			<div class="col-lg-4">
+				<textarea ng-model="user.bio" class="form-control" rows="4"></textarea>
 			</div>
 		</div>
 		
-		<div class="control-group">
-			<div class="controls">
+		<div class="form-group">
+			<div class="col-lg-offset-2 col-lg-10">
 				<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged() || disableButtons">Save</button>
-				<button class="btn" ng-click="reset()" ng-disabled="isUnchanged() || disableButtons">Reset</button>
+				<button class="btn btn-default" ng-click="reset()" ng-disabled="isUnchanged() || disableButtons">Reset</button>
 			</div>
 		</div>
 	</form>
-</fieldset>
-
-<!--
-<fieldset>
-	<legend>Profile URL</legend>
-	<p>
-		Short: <a href="/u/~{{user.fcps_id}}">edab-ds.appspot.com/u/~{{user.fcps_id}}</a><br/>
-		Permalink: <a href="/u/{{user.id}}">edab-ds.appspot.com/u/{{user.id}}</a>
-	</p>
-</fieldset>
--->
-
-<fieldset>
-	<legend>Sign out</legend>
-	<p>
+	
+	<!--
+	<fieldset>
+		<legend>Profile URL</legend>
+		<p>
+			Short: <a href="/u/~{{user.fcps_id}}">edab-ds.appspot.com/u/~{{user.fcps_id}}</a><br/>
+			Permalink: <a href="/u/{{user.id}}">edab-ds.appspot.com/u/{{user.id}}</a>
+		</p>
+	</fieldset>
+	-->
+	
+	<h3>Sign out</h3>
+	<div>
 		<button class="btn btn-danger" ng-click="service.auth.logout()">
-			<i class="icon-signout"></i>
+			<i class="glyphicon glyphicon-log-out"></i>
 			Sign out and revoke tokens
 		</button>
-	</p>
-</fieldset>
-
-<fieldset id="aboutEdab" itemscope itemprop="author">
-	<legend>About</legend>
-	<p>
-		eDAB is a product of <a href="http://gengkev.github.com/desklampstudios" target="_blank">Desklamp Studios</a>.
-		View our <a href="https://github.com/gengkev/edab" target="_blank" itemprop="url">Github repo!</a>
-	</p>
-	
-	<div id="gplus_badge">
-		<div class="g-page" data-width="300" data-href="https://plus.google.com/113383006901215901732" data-rel="publisher"></div>
 	</div>
-	<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/112830849462286532136" data-rel="author"></div>
-	<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/110382605130903206834" data-rel="author"></div>
-	<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/107757960491028812136" data-rel="author"></div>
-</fieldset>
+	
+	<h3>About</h3>
+	<div id="aboutEdab" class="clearfix" itemscope itemprop="author">
+		<p>
+			eDAB is a product of <a href="http://gengkev.github.com/desklampstudios" target="_blank">Desklamp Studios</a>.
+			View our <a href="https://github.com/gengkev/edab" target="_blank" itemprop="url">Github repo!</a>
+		</p>
+		
+		<div id="gplus_badge">
+			<div class="g-page" data-width="300" data-href="https://plus.google.com/113383006901215901732" data-rel="publisher"></div>
+		</div>
+		
+		<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/112830849462286532136" data-rel="author"></div>
+		<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/110382605130903206834" data-rel="author"></div>
+		<div class="g-person" data-width="300" data-layout="landscape" data-href="https://plus.google.com/107757960491028812136" data-rel="author"></div>
+	</div>
+</div>

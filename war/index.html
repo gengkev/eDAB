@@ -2,7 +2,7 @@
 <html lang="en" ng-app="eDAB-app" itemscope="itemscope" itemtype="http://schema.org/WebApplication">
 <head>
 	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
 	<link rel="publisher" href="https://plus.google.com/113383006901215901732" />
 	<!-- link rel="canocial" href="https://edab-ds.appspot.com/" / -->
@@ -16,12 +16,11 @@
 	</style>
 	
 	<!-- Development -->
-	<link rel="stylesheet" href="/lib/bootstrap-2.3.2/bootstrap.css" />
-	<link rel="stylesheet" href="/lib/bootstrap-2.3.2/bootstrap-responsive.css" />
-	<link rel="stylesheet" href="/lib/font-awesome-3.2.1/css/font-awesome.css" />
+	<link rel="stylesheet" href="/lib/bootstrap-3.0.0/css/bootstrap.min.css" />
+	<!--link rel="stylesheet" href="/lib/bootstrap-3.0.0/css/bootstrap-theme.min.css" /-->
 	<!-- Production
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" />
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css" />
 	-->
 	
 	<link rel="stylesheet" href="/main.css" />
@@ -33,26 +32,26 @@
 			<ul id="navlist" ng-controller="NavCtrl">
 				<li ng-class="{onPage: onPage('/agenda')}">
 					<a href="/agenda">
-						<i class="icon-book"></i>
+						<i class="glyphicon glyphicon-book"></i>
 						Agenda
 					</a>
 				</li>
 				<li ng-class="{onPage: onPage('/calendar')}">
 					<a href="/calendar">
-						<i class="icon-calendar"></i>
+						<i class="glyphicon glyphicon-calendar"></i>
 						Calendar
 					</a>
 				</li>
 				<li ng-class="{onPage: onPage('/courses')}">
 					<a href="/courses">
-						<i class="icon-list"></i>
+						<i class="glyphicon glyphicon-list"></i>
 						Courses
 					</a>
 				</li>
 				<li ng-class="{onPage: onPage('/settings')}" class="pull-right">
 					<a href="/settings">
-						<i class="icon-user"></i>
-						{{getName() || "Not logged in"}}
+						<i class="glyphicon glyphicon-user"></i>
+						<span ng-bind="getName() || 'Not logged in'">Not logged in</span>
 					</a>
 				</li>
 			</ul>
@@ -65,7 +64,7 @@
 	
 	<!-- Infobox -->
 	<div id="infobox-container" ng-controller="InfoboxCtrl" ng-show="infoboxState()" ng-animate="{show: 'fade-in', hide: 'fade-out'}">
-		<div id="infobox" ng-show="infoboxState()">
+		<div id="infobox" ng-cloak="" ng-show="infoboxState()">
 			<display-error></display-error>
 			<section id="infobox-login" ng-cloak="" ng-show="infoboxState() == 'login'">
 				<h3>eDAB brings your assignment book online.</h3>
@@ -78,18 +77,20 @@
 						Sign in with your fcpsschools.net account
 					</button>
 				</p>
-				<details>
-					<summary>Your <a href="http://fcpsschools.net" target="_blank">fcpsschools.net</a> account 
-						is used to verify your student ID.
-					</summary>
-					<p>
-						Using FCPS Google Apps accounts allows us to verify your name and student ID 
-						quickly and reliably. However, we still must manually verify that you attend RCMS.
-					</p>
-				</details>
+				<!--details><summary-->
+				<p>
+					Your <a href="http://fcpsschools.net" target="_blank">fcpsschools.net</a> account 
+					is used to verify your student ID.
+				</p>
+				<!--<small class="text-muted">
+					Using FCPS Google Apps accounts allows us to verify your name and student ID 
+					quickly and reliably. However, we still must manually verify that you attend RCMS.
+				</small>-->
+				<!--/summary></details-->
 			</section>
-			<section class="infobox-message" ng-hide="infoboxState() != 'loading'">
-				<i class="icon-spinner icon-spin icon-large"></i>
+			<section class="infobox-message" ng-show="infoboxState() != 'login'">
+				<!--i class="icon-spinner icon-spin icon-large"></i><br /-->
+				<span class="text-muted">Loading...</span>
 			</section>
 		</div>
 	</div>
@@ -104,7 +105,10 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js"></script>
 	-->
 	
-	<script src="/app.js"></script>
-	<script src="/utils.js"></script>
+	<script src="/js/app.js"></script>
+	<script src="/js/agenda.js"></script>
+	<script src="/js/calendar.js"></script>
+	<script src="/js/course.js"></script>
+	<script src="/js/utils.js"></script>
 </body>
 </html>

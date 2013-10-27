@@ -2,34 +2,34 @@
 
 var app = angular.module('eDAB-app', ['eDAB-utils']);
 
-app.config(function($routeProvider, $locationProvider) {
-		$locationProvider.html5Mode(true);
-		$locationProvider.hashPrefix("");
-        	
-		$routeProvider
-			.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
-			.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
-			.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
-			.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
-			.when('/courses', {controller: CourseListCtrl, templateUrl: '/partials/course_list.html'})
-			.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course.html'})
-			.when('/courses/:courseId/edit', {controller: CourseEditCtrl, templateUrl: '/partials/course_edit.html'})
-			.otherwise({redirectTo: '/agenda'});
+app.config(function ($routeProvider, $locationProvider) {
+	$locationProvider.html5Mode(true);
+	$locationProvider.hashPrefix("");
 		
-		$locationProvider.html5Mode(true).hashPrefix("");
-	});
+	$routeProvider
+		.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
+		.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
+		.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
+		.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
+		.when('/courses', {controller: CourseListCtrl, templateUrl: '/partials/course_list.html'})
+		.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course.html'})
+		.when('/courses/:courseId/edit', {controller: CourseEditCtrl, templateUrl: '/partials/course_edit.html'})
+		.otherwise({redirectTo: '/agenda'});
+	
+	$locationProvider.html5Mode(true).hashPrefix("");
+});
 
 // This needs to be cleaned up. Big time.
-app.service('appService', function($http, $window, $q, $rootScope) {
+app.service('appService', function ($http, $window, $q, $rootScope) {
 	var self = this;
 	
 	// Default handling for authorized requests.
 	self._reqHandler = {
-		success: function(response) {
+		success: function (response) {
 			self.auth.logged_in = true;
 			return response;
 		},
-		error: function(response) {
+		error: function (response) {
 			console.info("Request error", response.data.error);
 			
 			if (response.data.error) {
@@ -73,49 +73,49 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 		
 		user: null,
 		
-		updateUser: function(newUser) {
+		updateUser: function (newUser) {
 			newUser = angular.copy(newUser);
 			
 			return $http({
 				method: "PUT",
-				url: "/rest/account/currentUser",
+				url: "/rest/users/me",
 				data: newUser
 			})
 			.then(self._reqHandler.success, self._reqHandler.error)
-			.then(function(response) {
+			.then(function (response) {
 				console.log("Saved user. Response: ", response);
 				self.auth.user = newUser;
 			});
 		},
 		
-		login: function() {
+		login: function () {
 			// $window.location.replace("/login");
 			$window.open("/login?close", "login");
 			
-			$window.loginCallback = function() {
-				$rootScope.$apply(function() { // get inside angular lifecycle or whatnot
+			$window.loginCallback = function () {
+				$rootScope.$apply(function () { // get inside angular lifecycle or whatnot
 					self.auth.check();
 				});
 			};
 		},
 			
-		logout: function() {
+		logout: function () {
 			$http({
 				method: "POST",
 				url: "/logout"
 			})
-			.then(function(resp) {
+			.then(function (resp) {
 				self.auth.check();
 			});
 		},
 		
-		check: function() {
+		check: function () {
 			$http({
 				method: "GET",
-				url: "/rest/account/currentUser"
+				url: "/rest/users/me"
 			})
 			.then(self._reqHandler.success, self._reqHandler.error)
-			.then(function(response) {
+			.then(function (response) {
 				console.log("Loaded user. Response:", response);
 				self.auth.user = response.data;
 			});
@@ -124,26 +124,26 @@ app.service('appService', function($http, $window, $q, $rootScope) {
 	
 });
 
-app.run(function(appService, $rootScope) {
+app.run(function (appService, $rootScope) {
 	appService.auth.check();
 	
-	$rootScope.$watch(function() { return appService.auth.logged_in; }, function(newVal) {
+	$rootScope.$watch(function () { return appService.auth.logged_in; }, function (newVal) {
 		$rootScope.$broadcast("loginStateChange", newVal);
 	});
 });
 
 function AppCtrl($scope, $exceptionHandler) {
-	$scope.getErrorMsg = function() {
+	$scope.getErrorMsg = function () {
 		return $exceptionHandler.errorMsg;
 	};
 }
 
 function InfoboxCtrl($scope, appService, $exceptionHandler) {
-	$scope.login = function() {
+	$scope.login = function () {
 		appService.auth.login();
 	};
 	
-	$scope.infoboxState = function() {
+	$scope.infoboxState = function () {
 		if (appService.auth.logged_in === false) {
 			return "login";
 		} else if (appService.auth.logged_in === null) {
@@ -154,26 +154,20 @@ function InfoboxCtrl($scope, appService, $exceptionHandler) {
 }
 
 function NavCtrl($scope, $location, appService) {
-	$scope.getName = function() {
+	$scope.getName = function () {
 		return appService.auth.user && appService.auth.user.name;
 	};
 	
-	$scope.onPage = function(path) {
+	$scope.onPage = function (path) {
 		return $location.path() == path;
 	};
-}
-
-function AgendaCtrl($scope, $location, appService) {
-}
-
-function CalendarCtrl($scope, $location, appService) {
 }
 
 function SettingsCtrl($scope, $location, appService, $window, Utils) {	
 	$scope.service = appService;
 	$scope.user = angular.copy(appService.auth.user);
 	
-	$scope.$on("loginStateChange", function(newState) {
+	$scope.$on("loginStateChange", function (newState) {
 		$scope.user = angular.copy(appService.auth.user);
 	});
 	
@@ -193,95 +187,32 @@ function SettingsCtrl($scope, $location, appService, $window, Utils) {
 		{"grade": 8, "letter": "Z", "name": "Zebras"}
 	];
 	
-	$scope.isUnchanged = function() {
+	$scope.isUnchanged = function () {
 		return angular.equals(appService.auth.user, $scope.user);
 	};
-	$scope.save = function() {
+	$scope.save = function () {
 		// so people don't accidentally submit twice
 		$scope.disableButtons = true;
 		
 		appService.auth.updateUser($scope.user)
-		.then(function() {
+		.then(function () {
 			$scope.disableButtons = false;
-		}, function() {
+		}, function () {
 			$scope.disableButtons = false;
 		});
 	};
-	$scope.reset = function() {
+	$scope.reset = function () {
 		$scope.user = angular.copy(appService.auth.user);
 	};
 	
-	$scope.$watch(function() {
+	$scope.$watch(function () {
 		return appService.auth.user;
-	}, function() {
+	}, function () {
 		$scope.reset();
 	});
 	
 	// Initialize Google+ badge
 	Utils.loadGPlusBadge();
-}
-
-function CourseListCtrl($scope, $location, $http, appService) {
-	$http({
-		method: "GET",
-		url: "/rest/courses"
-	})
-	.then(function(response) {
-		console.log("Loaded course list: ", response);
-		$scope.courses = response.data;
-	}, function(response) {
-		// ...
-		appService._reqHandler.error(response);
-	});	
-	
-    $scope.newCourse = function() {
-		$http({
-			method: "POST",
-			url: "/rest/courses",
-			data: ""
-		})
-		.then(function(response) {
-			var id = response.data.id;
-			$location.path("/courses/" + id + "/edit");
-		}, function(response) {
-			// idk
-			appService._reqHandler.error(response);
-		});
-	};
-}
-
-function CourseCtrl($scope, $http, $routeParams, $location, appService) {
-	var courseId = $routeParams.courseId;
-	$http({
-		method: "GET",
-		url: "/rest/courses/" + courseId
-	})
-	.then(function(response) {
-		console.log("Loaded course: ", response);
-		$scope.course = response.data;
-	}, function(response) {
-		// ...
-		appService._reqHandler.error(response);
-	});
-	
-	$scope.edit = function() {
-		$location.path("/courses/" + courseId + "/edit");
-	};
-}
-
-function CourseEditCtrl($scope, $http, $routeParams, appService) {
-	var courseId = $routeParams.courseId;
-	$http({
-		method: "GET",
-		url: "/rest/courses/" + courseId
-	})
-	.then(function(response) {
-		console.log("Loaded course: ", response);
-		$scope.course = response.data;
-	}, function(response) {
-		// ...
-		appService._reqHandler.error(response);
-	});
 }
 
 function UserCtrl($scope, $routeParams, $http, $location, appService) {
@@ -290,10 +221,10 @@ function UserCtrl($scope, $routeParams, $http, $location, appService) {
 		method: "GET",
 		url: "/rest/users/" + username
 	})
-	.then(function(response) {
+	.then(function (response) {
 		console.log("Loaded user: ", response);
 		$scope.user = response.data;
-	}, function(response) {
+	}, function (response) {
 		if (response.status == 404) {
 			alert("User not found!");
 			return;

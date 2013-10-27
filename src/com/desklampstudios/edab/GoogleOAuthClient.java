@@ -15,7 +15,7 @@ public class GoogleOAuthClient {
 	private static final Logger log = Logger.getLogger(GoogleOAuthClient.class.getName());
 
 	private static final String LOGIN_PATH = "/logincallback";
-	private static final String SCOPES = "openid profile email";
+	private static final String SCOPES = "profile email";
 
 	/*
 	protected static String getRedirectURL() {
@@ -103,16 +103,18 @@ public class GoogleOAuthClient {
 		log.log(Level.FINER, "Google UserInfo endpoint returned:\n" + output);
 
 		// Parse the JSON.
-		User user = new User();
+		String id, name, email, gender;
+		boolean verifiedEmail;
+		
 		try {
 			ObjectMapper m = new ObjectMapper();
 			JsonNode rootNode = m.readTree(output);
 			
-			String id = rootNode.path("sub").textValue();
-			String name = rootNode.path("name").textValue();
-			String email = rootNode.path("email").textValue();
-			boolean verifiedEmail = rootNode.get("email_verified").booleanValue();
-			String gender = rootNode.path("gender").textValue();
+			id = rootNode.path("sub").textValue();
+			name = rootNode.path("name").textValue();
+			email = rootNode.path("email").textValue();
+			verifiedEmail = rootNode.get("email_verified").booleanValue();
+			gender = rootNode.path("gender").textValue();
 
 			if (name == null || email == null) {
 				throw new Exception("missing fields");
@@ -122,18 +124,18 @@ public class GoogleOAuthClient {
 					verifiedEmail != true) {
 				throw new Exception("Invalid email address: " + email);
 			}
-			
-			user.id = id;
-			user.name = name;
-			user.real_name = name;
-			user.fcps_id = email.substring(0, email.length() - 16);
-
-			if (gender != null) {
-				user.gender = Gender.valueOf(gender.toUpperCase());
-			}
 		} catch (Exception e) {
 			log.log(Level.INFO, "JSON that failed: " + output);
 			throw e;
+		}
+		
+		User user = new User(id);
+		user.name = name;
+		user.real_name = name;
+		user.fcps_id = email.substring(0, email.length() - 16);
+
+		if (gender != null) {
+			user.gender = Gender.valueOf(gender.toUpperCase());
 		}
 
 		return user;

@@ -1,6 +1,5 @@
 package com.desklampstudios.edab;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;

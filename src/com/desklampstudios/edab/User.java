@@ -14,16 +14,22 @@ import com.googlecode.objectify.condition.IfNotNull;
 @Cache
 @Entity
 public class User {
-	public class Courses { }
+	public static class Courses { }
 
-	enum Gender { male, female, other }
-	enum AccountState {
+	static enum Gender { male, female, other }
+	static enum AccountState {
 		IMPORTED,      // user imported, has not logged in
 		NEEDS_APPROVAL // user has tried to log in but not approved
 	}
+	
+	@SuppressWarnings("unused")
+	private User() { }
+	
+	User(String id) {
+		this.id = id;
+	}
 
-
-	public @Id              String id; // google userid
+	private @Id             String id;      // google userid
 	public @Index           String fcps_id; // fcpsschools.net user email
 	public @Index           String name;
 	public                  String real_name;
@@ -32,13 +38,14 @@ public class User {
 	private                 Text bio;
 	@Index(IfNotNull.class) AccountState accountState;
 	
+	public String getId() {
+		return id;
+	}
 	public String getBio() {
-		if (bio == null) return null;
-		else return bio.getValue();
+		return (bio == null ? null : bio.getValue());
 	}
 	public void setBio(String str) {
-		if (str == null) bio = null;
-		else bio = new Text(str);
+		bio = (str == null ? null : new Text(str));
 	}
 	
 	@Override

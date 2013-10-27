@@ -5,8 +5,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.2.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.2.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.2.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Kevin/Documents/GitHub/eDAB/war/WEB-INF/lib/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Kevin/Documents/GitHub/eDAB/war/WEB-INF/lib/jersey-bundle-1.17.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/objectify-4.0rc1.jar" sourcepath="war/WEB-INF/lib/objectify-4.0rc1-sources.jar">
 		<attributes>
@@ -14,5 +12,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-bundle-1.17.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

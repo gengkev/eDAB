@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 
-@Path("/courses")
+@Path("courses")
 @Consumes("application/json")
 @Produces("application/json")
 public class CourseResource {
@@ -49,13 +49,12 @@ public class CourseResource {
 		
 		String currentUserId = AccountService.checkLogin(req, resp);
 		
-		// create empty course
-		Course course = new Course();
-		
 		// allocate id?
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Long id = ds.allocateIds("Course", 1).getStart().getId();
-		course.id = id;
+		
+		// create empty course
+		Course course = new Course(id);
 		
 		// yay logging		
 		log.log(Level.INFO, "Creating course " + course.toString());
@@ -95,7 +94,7 @@ public class CourseResource {
 		
 		// ...validate fields?
 		try {
-			assert providedCourse.id == dbCourse.id; // (dbCourse.id == courseId)
+			assert providedCourse.getId() == dbCourse.getId(); // (dbCourse.id == courseId)
 		} catch(AssertionError ex) {
 			throw new eDABException.NotAuthorizedException("Illegal field change");
 		}

@@ -1,16 +1,21 @@
 <div>
+	<ol class="breadcrumb nofade">
+		<li class="active">Courses</li>
+	</ol>
+	
 	<button class="btn btn-primary pull-right" ng-click="newCourse()">New course</button>
 	
-	<table class="table">
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-		</tr>
-		<tr ng-repeat="course in courses">
-			<td>
-				<a href="/courses/{{course.id}}">{{course.id}}</a>
-			</td>
-			<td>{{course.name}}</td>
-		</tr>
-	</table>
+	<div class="page-header">
+		<h1>Courses <small>all of 'em, for now</small></h1>
+	</div>
+	
+	<div class="list-group" id="course-list">
+		<a ng-repeat="course in courses" class="list-group-item" ng-style="{'background-color': getColor($index)}" href="/courses/{{course.id}}">
+			<h4 class="list-group-item-heading">{{course.name || "Untitled Course"}}</h4>
+			<p class="list-group-item-text">
+				{{course.info}}
+				<span class="text-muted pull-right">ID {{course.id}}</span>
+			</p>
+		</a>
+	</div>
 </div>
