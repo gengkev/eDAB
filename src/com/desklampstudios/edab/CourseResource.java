@@ -38,7 +38,6 @@ public class CourseResource {
 		
 		// convert to json
 		String json = new ObjectMapper().writeValueAsString(courses);
-		
 		return Response.ok(Utils.JsonPad + json).build();
 	}
 	
@@ -103,6 +102,19 @@ public class CourseResource {
 		ofy().save().entity(providedCourse).now();
 		
 		return Response.ok().build();
+	}
+	
+	@GET @Path("/assignments")
+	public Response listCourseHomework(@PathParam("courseId") Long courseId) throws JsonProcessingException {
+		// get the course
+		// TODO: only get the key...
+		Course course = ofy().load().type(Course.class).id(courseId).now();
+		
+		List<Assignment> assignments = ofy().load().type(Assignment.class).ancestor(course).list();
+		
+		// convert to json
+		String json = new ObjectMapper().writeValueAsString(courses);
+		return Response.ok(Utils.JsonPad + json).build();
 	}
 	
 }
