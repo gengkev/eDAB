@@ -14,7 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+// import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ import com.googlecode.objectify.Key;
 public class UserResource {
 	
 	@GET @Path("/{username}")
-	public Response getUser(@PathParam("username") String username) throws JsonProcessingException {
+	public User getUser(@PathParam("username") String username) throws JsonProcessingException {
 		Key<User> userKey = getUserByUsername(username);
 		User user = ofy().load().key(userKey).now();
 		
@@ -34,10 +34,8 @@ public class UserResource {
 			throw new eDABException.NotFoundException("The specified user could not be found");
 		}
 		
-		// convert into json
-		String json = new ObjectMapper().writeValueAsString(user);
-
-		return Response.ok(Utils.JsonPad + json).build();
+		return user;
+		// return Response.ok(user).build();
 	}
 	
 	/**
@@ -61,7 +59,7 @@ public class UserResource {
 	}
 	
 	@GET @Path("/me")
-	public Response getCurrentUser(@Context HttpServletRequest req, @Context HttpServletResponse resp) {
+	public User getCurrentUser(@Context HttpServletRequest req, @Context HttpServletResponse resp) {
 		// NotLoggedIn or InvalidSession sent to client
 		String currentUserId = AccountService.checkLogin(req, resp);
 
@@ -74,21 +72,12 @@ public class UserResource {
 			throw new eDABException.NeedsApprovalException("");
 		}
 
-		// serialize into JSON
-
-		ObjectMapper mapper = new ObjectMapper();
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(user);
-		} catch (JsonProcessingException e) {
-			throw new eDABException.InternalServerException(e.toString());
-		}
-
-		return Response.ok(Utils.JsonPad + json).build();
+		return user;
+		// return Response.ok(user).build();
 	}
 
 	@PUT @Path("/me")
-	public Response setCurrentUser(
+	public void setCurrentUser(
 			@Context HttpServletRequest req,
 			@Context HttpServletResponse resp) throws IOException {
 		
@@ -116,6 +105,6 @@ public class UserResource {
 		// Save user
 		ofy().save().entity(providedUser).now();
 		
-		return Response.ok().build();
+		// return Response.ok().build();
 	}
 }

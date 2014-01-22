@@ -2,17 +2,30 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.2.2.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.2.2.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.2.2.jar"/>
-	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/objectify-4.0rc1.jar" sourcepath="war/WEB-INF/lib/objectify-4.0rc1-sources.jar">
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (1)"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-16.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-server.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-common.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/javax.ws.rs-api-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-container-servlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-container-servlet-core.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/hk2-api-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/hk2-locator-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/cglib-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/hk2-utils-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/asm-all-repackaged-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/javax.annotation-api-1.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-client.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/objectify-4.0rc2.jar" sourcepath="war/WEB-INF/lib/objectify-4.0rc2-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/eDAB/war/WEB-INF/lib/objectify-4.0rc1-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/eDAB/war/WEB-INF/lib/objectify-4.0rc2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-14.0.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jersey-bundle-1.17.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/validation-api-1.1.0.Final.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-annotations-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-databind-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-jaxrs-json-provider-2.2.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-jaxrs-base-2.2.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

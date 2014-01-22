@@ -18,7 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+// import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,21 +32,20 @@ public class CourseResource {
 	private static final Logger log = Logger.getLogger(CourseResource.class.getName());
 	
 	@GET
-	public Response listCourses() throws JsonProcessingException {
+	public List<Course> listCourses() throws JsonProcessingException {
 		// list allll the courses
 		List<Course> courses = ofy().load().type(Course.class).list();
 		
-		// convert to json
-		String json = new ObjectMapper().writeValueAsString(courses);
-		
-		return Response.ok(Utils.JsonPad + json).build();
+		return courses;
+		// return Response.ok(courses).build();
 	}
 	
 	@POST
-	public Response createCourse(
+	public Course createCourse(
 			@Context HttpServletRequest req,
 			@Context HttpServletResponse resp) throws IOException {
 		
+		@SuppressWarnings("unused")
 		String currentUserId = AccountService.checkLogin(req, resp);
 		
 		// allocate id?
@@ -62,25 +61,21 @@ public class CourseResource {
 		// add to db
 		ofy().save().entity(course).now();
 		
-		// json json
-		String json = new ObjectMapper().writeValueAsString(course);
-		
-		return Response.ok(Utils.JsonPad + json).build();
+		return course;
+		// return Response.ok(course).build();
 	}
 	
 	@GET @Path("/{courseId}")
-	public Response getCourse(@PathParam("courseId") Long courseId) throws JsonProcessingException {
+	public Course getCourse(@PathParam("courseId") Long courseId) throws JsonProcessingException {
 		// get from db
 		Course course = ofy().load().type(Course.class).id(courseId).now();
 		
-		// convert to json
-		String json = new ObjectMapper().writeValueAsString(course);
-		
-		return Response.ok(Utils.JsonPad + json).build();
+		return course;
+		// return Response.ok(course).build();
 	}
 	
 	@PUT @Path("/{courseId}")
-	public Response setCourse(
+	public void setCourse(
 			@Context HttpServletRequest req, 
 			@Context HttpServletResponse resp,
 			@PathParam("courseId") Long courseId) throws IOException {
@@ -102,7 +97,7 @@ public class CourseResource {
 		// save
 		ofy().save().entity(providedCourse).now();
 		
-		return Response.ok().build();
+		// return Response.ok().build();
 	}
 	
 }
