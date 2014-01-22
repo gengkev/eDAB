@@ -20,10 +20,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 // import javax.ws.rs.core.Response;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.googlecode.objectify.Key;
 
 @Path("courses")
 @Consumes("application/json")
@@ -100,17 +102,17 @@ public class CourseResource {
 		// return Response.ok().build();
 	}
 	
-	@GET @Path("/assignments")
-	public Response listCourseHomework(@PathParam("courseId") Long courseId) throws JsonProcessingException {
+	@GET @Path("/{courseId}/assignments")
+	public List<Assignment> listCourseHomework(@PathParam("courseId") Long courseId) throws JsonProcessingException {
 		// get the course
-		// TODO: only get the key...
-		Course course = ofy().load().type(Course.class).id(courseId).now();
+		
+		// likely to throw an exception (if courseId is invalid)
+		Key<Course> course = Key.create(Course.class, courseId);
 		
 		List<Assignment> assignments = ofy().load().type(Assignment.class).ancestor(course).list();
 		
-		// convert to json
-		String json = new ObjectMapper().writeValueAsString(courses);
-		return Response.ok(Utils.JsonPad + json).build();
+		return assignments;
+		// return Response.ok(assignments).build();
 	}
 	
 }
