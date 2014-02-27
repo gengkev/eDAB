@@ -1,15 +1,28 @@
-<form class="form-horizontal">
-	<div class="control-group">
-		<label class="control-label">ID</label>
-		<div class="controls">
-			{{course.id}}
+<div>
+	<ol class="breadcrumb nofade">
+		<li><a href="/courses">Courses</a></li>
+		<li><a href="/courses/{{course.id}}">{{course.name || "Untitled Course"}}</a></li>
+		<li class="active">Edit</li>
+	</ol>
+	
+	<div class="btn-toolbar pull-right">
+		<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged() || disableButtons">Save</button>
+		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+	</div>
+	
+	<div class="page-header row">
+		<div class="col-lg-4">
+			<input type="text" class="form-control input-lg" placeholder="Untitled Course" autofocus="autofocus" ng-model="course.name" />
 		</div>
 	</div>
 	
-	<div class="control-group">
-		<label class="control-label">Name</label>
-		<div class="controls">
-			{{course.name}}
+	<div class="row">
+		<div class="col-lg-4">
+			<textarea class="form-control" ng-model="course.info" rows="3"></textarea>
 		</div>
 	</div>
-</form>
+	
+	<dl class="dl-horizontal">
+		<dt>ID</dt> <dd>{{course.id}}</dd>
+	</dl>
+</div>

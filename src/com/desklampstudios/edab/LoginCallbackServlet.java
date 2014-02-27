@@ -76,7 +76,7 @@ public class LoginCallbackServlet extends HttpServlet {
 		session.setAttribute("access_token", access_token);
 
 		// store the id in the session
-		session.setAttribute("userId", userData.id);
+		session.setAttribute("userId", userData.getId());
 
 
 		// log log log
@@ -84,7 +84,7 @@ public class LoginCallbackServlet extends HttpServlet {
 
 
 		// Get the user from the datastore
-		User user = ofy().load().type(User.class).id(userData.id).now();
+		User user = ofy().load().type(User.class).id(userData.getId()).now();
 
 		// user does not exist in the datastore
 		if (user == null) {

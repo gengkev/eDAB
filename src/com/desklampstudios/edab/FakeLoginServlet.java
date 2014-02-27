@@ -20,8 +20,7 @@ public class FakeLoginServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {		
-		User user = new User();
-		user.id = username;
+		User user = new User(username);
 		user.fcps_id = username;
 		user.name = name;
 		user.real_name = name;

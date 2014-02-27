@@ -82,10 +82,14 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>Jersey</servlet-name>
-		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
-			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-name>jersey.config.server.provider.packages</param-name>
 			<param-value>com.desklampstudios.edab</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.scanning.recursive</param-name>
+			<param-value>false</param-value>
 		</init-param>
 	</servlet>
 
