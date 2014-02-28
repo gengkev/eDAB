@@ -1,0 +1,27 @@
+<div>
+	<a href="/courses" class="btn btn-default">
+		<i class="glyphicon glyphicon-arrow-left"></i> Courses
+	</a>
+	
+	<!--
+	<ol class="breadcrumb" style="display: inline-block;">
+		<li><a href="/courses">Courses</a></li>
+		<li class="active">{{course.name || "Untitled"}}</li>
+	</ol>
+	-->
+	<button class="btn btn-primary pull-right" ng-click="edit()">Edit</button>
+
+	<button class="btn btn-primary pull-right" ng-click="addHomework()">
+		<i class="glyphicon glyphicon-plus"></i>
+		Add homework
+	</button>
+	
+	<div class="page-header">
+		<h1>{{course.name || "Untitled"}}</h1>
+		<p class="lead">{{course.info || "No description"}}</p>
+	</div>
+	
+	<dl class="dl-horizontal">
+		<dt>ID</dt> <dd>{{course.id}}</dd>
+	</dl>
+</div>
