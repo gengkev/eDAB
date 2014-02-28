@@ -35,11 +35,8 @@ public class CourseResource {
 	
 	@GET
 	public List<Course> listCourses() throws JsonProcessingException {
-		// list allll the courses
 		List<Course> courses = ofy().load().type(Course.class).list();
-		
 		return courses;
-		// return Response.ok(courses).build();
 	}
 	
 	@POST
@@ -64,16 +61,12 @@ public class CourseResource {
 		ofy().save().entity(course).now();
 		
 		return course;
-		// return Response.ok(course).build();
 	}
 	
 	@GET @Path("/{courseId}")
 	public Course getCourse(@PathParam("courseId") Long courseId) throws JsonProcessingException {
-		// get from db
 		Course course = ofy().load().type(Course.class).id(courseId).now();
-		
 		return course;
-		// return Response.ok(course).build();
 	}
 	
 	@PUT @Path("/{courseId}")
@@ -81,6 +74,10 @@ public class CourseResource {
 			@Context HttpServletRequest req, 
 			@Context HttpServletResponse resp,
 			@PathParam("courseId") Long courseId) throws IOException {
+		
+		// Ahem hem ID please
+		@SuppressWarnings("unused")
+		String currentUserId = AccountService.checkLogin(req, resp);
 		
 		// load course id from db
 		Course dbCourse = ofy().load().type(Course.class).id(courseId).now();
@@ -98,21 +95,50 @@ public class CourseResource {
 		
 		// save
 		ofy().save().entity(providedCourse).now();
-		
-		// return Response.ok().build();
 	}
 	
 	@GET @Path("/{courseId}/assignments")
-	public List<Assignment> listCourseHomework(@PathParam("courseId") Long courseId) throws JsonProcessingException {
-		// get the course
-		
+	public List<Assignment> listAssignments(@PathParam("courseId") Long courseId) {		
 		// likely to throw an exception (if courseId is invalid)
 		Key<Course> course = Key.create(Course.class, courseId);
-		
 		List<Assignment> assignments = ofy().load().type(Assignment.class).ancestor(course).list();
-		
 		return assignments;
-		// return Response.ok(assignments).build();
+	}
+	
+	@POST @Path("/{courseId}/assignments")
+	public Assignment createAssignment(
+			@Context HttpServletRequest req, 
+			@Context HttpServletResponse resp,
+			@PathParam("courseId") Long courseId) {
+		
+		// Ahem hem ID please
+		@SuppressWarnings("unused")
+		String currentUserId = AccountService.checkLogin(req, resp);
+		
+		// get course to verify existence
+		Course course = ofy().load().type(Course.class).id(courseId).now();
+		
+		// allocate id
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Long id = ds.allocateIds("Assignment", 1).getStart().getId();
+		
+		// create empty course
+		Assignment asgn = new Assignment(id, Key.create(course));
+		
+		// yay logging		
+		log.log(Level.INFO, "Creating assignment " + asgn.toString());
+		
+		// add to db
+		ofy().save().entity(asgn).now();
+		
+		return asgn;
+	}
+	
+	@GET @Path("/{courseId}/assignments/{asgnId}")
+	public Assignment getAssignment(@PathParam("courseId") Long courseId, @PathParam("asgnId") Long asgnId) {
+		Key<Course> courseKey = Key.create(Course.class, courseId);		
+		Assignment asgn = ofy().load().type(Assignment.class).parent(courseKey).id(asgnId).now();
+		return asgn;
 	}
 	
 }

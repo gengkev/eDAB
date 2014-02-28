@@ -27,28 +27,37 @@
 </head>
 <body ng-controller="AppCtrl">
 	<div class="container">
-		<nav id="navbar">
+		<nav id="navbar" ng-controller="NavCtrl">
 			<a itemprop="name" class="brand" href="/">eDAB</a>
-			<ul id="navlist" ng-controller="NavCtrl">
+			<ul class="navlist">
 				<li ng-class="{onPage: onPage('/agenda')}">
 					<a href="/agenda">
 						<i class="glyphicon glyphicon-book"></i>
 						Agenda
 					</a>
 				</li>
+				<!--
 				<li ng-class="{onPage: onPage('/calendar')}">
 					<a href="/calendar">
 						<i class="glyphicon glyphicon-calendar"></i>
 						Calendar
 					</a>
 				</li>
+				-->
 				<li ng-class="{onPage: onPage('/courses')}">
 					<a href="/courses">
 						<i class="glyphicon glyphicon-list"></i>
 						Courses
 					</a>
 				</li>
-				<li ng-class="{onPage: onPage('/settings')}" class="pull-right">
+			</ul>
+			<ul class="navlist pull-right">
+				<li class="">
+					<a href="">
+						<i class="glyphicon glyphicon-bell"></i>
+					</a>
+				</li>
+				<li ng-class="{onPage: onPage('/settings')}" class="">
 					<a href="/settings">
 						<i class="glyphicon glyphicon-user"></i>
 						<span ng-bind="getName() || 'Not logged in'">Not logged in</span>
@@ -107,8 +116,8 @@
 	
 	<script src="/js/app.js"></script>
 	<script src="/js/agenda.js"></script>
-	<script src="/js/calendar.js"></script>
 	<script src="/js/course.js"></script>
+	<script src="/js/asgn.js"></script>
 	<script src="/js/utils.js"></script>
 </body>
 </html>

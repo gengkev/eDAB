@@ -1,5 +1,6 @@
 package com.desklampstudios.edab;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Text;
@@ -22,10 +23,12 @@ public class User {
 		NEEDS_APPROVAL // user has tried to log in but not approved
 	}
 	
-	@SuppressWarnings("unused")
-	private User() { }
+	private User() {
+		this.created = new Date();
+	}
 	
 	User(String id) {
+		this();
 		this.id = id;
 	}
 
@@ -36,6 +39,7 @@ public class User {
 	@Load(Courses.class)    List<Ref<Course>> courses;
 	public                  Gender gender;
 	private                 Text bio;
+	public                  Date created;
 	@Index(IfNotNull.class) AccountState accountState;
 	
 	public String getId() {

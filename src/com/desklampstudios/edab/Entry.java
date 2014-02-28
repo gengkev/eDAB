@@ -12,14 +12,24 @@ import com.googlecode.objectify.annotation.Index;
 
 @Entity
 public class Entry {
-	@Id Long id;
-	@Index String name;
-	Text content;
-	Date updated;
-	@Index Date created;
-	List<Revision> revisions;
-	List<Comment> comments;
-
+	
+	protected Entry() {
+		this.updated = this.created = new Date();
+	}
+	
+	public Entry(Long id) {
+		this();
+		this.id = id;
+	}
+	
+	@Id public Long id;
+	@Index public String name;
+	public Text content;
+	@Index public Date updated;
+	public Date created;
+	public List<Revision> revisions;
+	public List<Comment> comments;
+	
 	@Embed
 	static class Revision {
 		Text content;

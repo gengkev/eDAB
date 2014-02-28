@@ -1,7 +1,9 @@
 <div>
-	<ol class="breadcrumb nofade">
+	<!--
+	<ol class="breadcrumb">
 		<li class="active">Courses</li>
 	</ol>
+	-->
 	
 	<button class="btn btn-primary pull-right" ng-click="newCourse()">New course</button>
 	
@@ -11,9 +13,9 @@
 	
 	<div class="list-group" id="course-list">
 		<a ng-repeat="course in courses" class="list-group-item" ng-style="{'background-color': getColor($index)}" href="/courses/{{course.id}}">
-			<h4 class="list-group-item-heading">{{course.name || "Untitled Course"}}</h4>
+			<h4 class="list-group-item-heading">{{course.name || "Untitled"}}</h4>
 			<p class="list-group-item-text">
-				{{course.info}}
+				{{course.info || "No description"}}
 				<span class="text-muted pull-right">ID {{course.id}}</span>
 			</p>
 		</a>

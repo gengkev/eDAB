@@ -8,12 +8,12 @@ app.config(function ($routeProvider, $locationProvider) {
 		
 	$routeProvider
 		.when('/agenda', {controller: AgendaCtrl, templateUrl: '/partials/agenda.html'})
-		.when('/calendar', {controller: CalendarCtrl, templateUrl: '/partials/calendar.html'})
 		.when('/settings', {controller: SettingsCtrl, templateUrl: '/partials/settings.html'})
 		.when('/users/:username', {controller: UserCtrl, templateUrl: '/partials/user.html'})
 		.when('/courses', {controller: CourseListCtrl, templateUrl: '/partials/course_list.html'})
-		.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course.html'})
+		.when('/courses/:courseId', {controller: CourseCtrl, templateUrl: '/partials/course_view.html'})
 		.when('/courses/:courseId/edit', {controller: CourseEditCtrl, templateUrl: '/partials/course_edit.html'})
+		.when('/courses/:courseId/assignments/:asgnId', {controller: AssignmentCtrl, templateUrl: '/partials/asgn.html'})
 		.otherwise({redirectTo: '/agenda'});
 	
 	$locationProvider.html5Mode(true).hashPrefix("");
@@ -172,7 +172,8 @@ function SettingsCtrl($scope, $location, appService, $window, Utils) {
 	});
 	
 	$scope.schools = [
-		{"name": "Rachel Carson MS"}
+		{"name": "Rachel Carson MS"},
+		{"name": "Thomas Jefferson HSST"}
 	];
 	$scope.teams = [
 		{"grade": 7, "letter": "A", "name": "Star Jumps"},

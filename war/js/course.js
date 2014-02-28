@@ -6,10 +6,7 @@ function CourseListCtrl($scope, $location, $http, appService) {
 	.then(function(response) {
 		console.log("Loaded course list: ", response);
 		$scope.courses = response.data;
-	}, function(response) {
-		// ...
-		appService._reqHandler.error(response);
-	});	
+	}, appService._reqHandler.error);	
 	
 	$scope.newCourse = function() {
 		$http({
@@ -20,10 +17,7 @@ function CourseListCtrl($scope, $location, $http, appService) {
 		.then(function(response) {
 			var id = response.data.id;
 			$location.path("/courses/" + id + "/edit");
-		}, function(response) {
-			// idk
-			appService._reqHandler.error(response);
-		});
+		}, appService._reqHandler.error);
 	};
 	
 	$scope.getColor = function(index) {
@@ -40,13 +34,22 @@ function CourseCtrl($scope, $http, $routeParams, $location, appService) {
 	.then(function(response) {
 		console.log("Loaded course: ", response);
 		$scope.course = response.data;
-	}, function(response) {
-		// ...
-		appService._reqHandler.error(response);
-	});
+	}, appService._reqHandler.error);
 	
 	$scope.edit = function() {
 		$location.path("/courses/" + courseId + "/edit");
+	};
+	
+	$scope.addHomework = function() {
+		$http({
+			method: "POST",
+			url: "/rest/courses/" + courseId + "/assignments",
+			data: ""
+		})
+		.then(function(response) {
+			var id = response.data.id;
+			$location.path("/courses/" + courseId + "/assignments/" + id + "");
+		}, appService._reqHandler.error);
 	};
 }
 
@@ -59,19 +62,17 @@ function CourseEditCtrl($scope, $http, $routeParams, $location, appService) {
 	.then(function(response) {
 		console.log("Loaded course: ", response);
 		$scope.course = response.data;
-		$scope.cleanCourse = angular.copy($scope.course);
-	}, function(response) {
-		appService._reqHandler.error(response);
-	});
+		$scope.dirtyCourse = angular.copy($scope.course);
+	}, appService._reqHandler.error);
 	
 	$scope.isUnchanged = function() {
-		return angular.equals($scope.course, $scope.cleanCourse);
+		return angular.equals($scope.course, $scope.dirtyCourse);
 	};
 	
 	$scope.save = function() {
 		$scope.disableButtons = true;
 		
-		var newCourse = angular.copy($scope.course);
+		var newCourse = angular.copy($scope.dirtyCourse);
 		$http({
 			method: "PUT",
 			url: "/rest/courses/" + courseId,
@@ -81,7 +82,7 @@ function CourseEditCtrl($scope, $http, $routeParams, $location, appService) {
 			console.log("Saved course: ", response);
 			
 			$scope.disableButtons = false;
-			$scope.cleanCourse = newCourse;
+			$scope.course = newCourse;
 			
 			$scope.cancel();
 		}, function(response) {

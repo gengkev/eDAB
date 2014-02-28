@@ -1,9 +1,15 @@
 <div>
-	<ol class="breadcrumb nofade">
+	<!--
+	<ol class="breadcrumb">
 		<li><a href="/courses">Courses</a></li>
 		<li><a href="/courses/{{course.id}}">{{course.name || "Untitled Course"}}</a></li>
 		<li class="active">Edit</li>
 	</ol>
+	-->
+	
+	<a href="/courses/{{course.id}}" class="btn btn-default">
+		<i class="glyphicon glyphicon-arrow-left"></i> {{course.name}}
+	</a>
 	
 	<div class="btn-toolbar pull-right">
 		<button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isUnchanged() || disableButtons">Save</button>
@@ -12,13 +18,13 @@
 	
 	<div class="page-header row">
 		<div class="col-lg-4">
-			<input type="text" class="form-control input-lg" placeholder="Untitled Course" autofocus="autofocus" ng-model="course.name" />
+			<input type="text" class="form-control input-lg" placeholder="Untitled Course" autofocus="autofocus" ng-model="dirtyCourse.name" />
 		</div>
 	</div>
 	
 	<div class="row">
 		<div class="col-lg-4">
-			<textarea class="form-control" ng-model="course.info" rows="3"></textarea>
+			<textarea class="form-control" ng-model="dirtyCourse.info" rows="3"></textarea>
 		</div>
 	</div>
 	
