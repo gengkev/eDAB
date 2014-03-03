@@ -1,6 +1,8 @@
 package com.desklampstudios.edab;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +18,10 @@ public class GoogleOAuthClient {
 
 	private static final String LOGIN_PATH = "/logincallback";
 	private static final String SCOPES = "profile email";
+
+	private static final String AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/auth";
+	private static final String TOKEN_ENDPOINT = "https://accounts.google.com/o/oauth2/token";
+	private static final String PROFILE_ENDPOINT = "https://www.googleapis.com/plus/v1/people/me";
 
 	/*
 	protected static String getRedirectURL() {
@@ -36,7 +42,7 @@ public class GoogleOAuthClient {
 	}
 
 	protected static String getEndpointURL(String host, String csrfToken) {
-		UriBuilder uri = UriBuilder.fromUri("https://accounts.google.com/o/oauth2/auth");
+		UriBuilder uri = UriBuilder.fromUri(AUTH_ENDPOINT);
 		uri.queryParam("response_type", "code");
 		uri.queryParam("client_id", Config.CLIENT_ID);
 		uri.queryParam("redirect_uri", getRedirectURL(host));
@@ -55,24 +61,25 @@ public class GoogleOAuthClient {
 		uri.queryParam("client_secret", Config.CLIENT_SECRET);
 		uri.queryParam("redirect_uri", getRedirectURL(host));
 		uri.queryParam("grant_type", "authorization_code");
-		
+
 		// substring(1) to get rid of the ? that's found in urls
 		String params = uri.build().toString().substring(1);
-		
+
 		String output = null;
 		try {
 			output = Utils.fetchURL(
 					"POST",
-					"https://accounts.google.com/o/oauth2/token",
+					TOKEN_ENDPOINT,
 					params,
 					"application/x-www-form-urlencoded;charset=UTF-8");
 		} catch (IOException e) {
 			throw e;
 		}
-		
+
 		log.log(Level.FINER, "Google OAuth2 Token endpoint returned:\n" + output);
 
 		// Parse the JSON.
+		// TODO: Take advantage of the JWT.
 		String access_token = null;
 		try {
 			ObjectMapper m = new ObjectMapper();
@@ -92,43 +99,47 @@ public class GoogleOAuthClient {
 	}
 
 	protected static User getUserData(String access_token) throws Exception {
-		String output = null;
-
+		// Call Google+ API people.get endpoint.
+		String input = null;
+		HttpURLConnection connection = null;
 		try {
-			output = Utils.fetchURL("GET", "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + access_token);
+			URL url = new URL(PROFILE_ENDPOINT);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("Authorization", "Bearer " + access_token);
 		} catch (IOException e) {
 			throw e;
 		}
-		
-		log.log(Level.FINER, "Google UserInfo endpoint returned:\n" + output);
+
+		// Send connection
+		input = Utils.readInputStream(connection.getInputStream());
+
+		log.log(Level.FINER, "Google people.get endpoint returned:\n" + input);
 
 		// Parse the JSON.
 		String id, name, email, gender;
-		boolean verifiedEmail;
-		
+
 		try {
 			ObjectMapper m = new ObjectMapper();
-			JsonNode rootNode = m.readTree(output);
-			
-			id = rootNode.path("sub").textValue();
-			name = rootNode.path("name").textValue();
-			email = rootNode.path("email").textValue();
-			verifiedEmail = rootNode.get("email_verified").booleanValue();
+			JsonNode rootNode = m.readTree(input);
+
+			id = rootNode.path("id").textValue();
+			name = rootNode.path("displayName").textValue();
+			email = rootNode.path("emails").get(0).path("value").textValue();
 			gender = rootNode.path("gender").textValue();
 
 			if (name == null || email == null) {
 				throw new Exception("missing fields");
 			}
 			// must be fcpsschools.net
-			if (email.length() < 16 || !email.substring(email.length() - 16).equalsIgnoreCase("@fcpsschools.net") || 
-					verifiedEmail != true) {
+			if (email.length() < 16 || !email.substring(email.length() - 16).equalsIgnoreCase("@fcpsschools.net")) {
 				throw new Exception("Invalid email address: " + email);
 			}
 		} catch (Exception e) {
-			log.log(Level.INFO, "JSON that failed: " + output);
+			log.log(Level.INFO, "JSON that failed: " + input);
 			throw e;
 		}
-		
+
 		User user = new User(id);
 		user.name = name;
 		user.real_name = name;
